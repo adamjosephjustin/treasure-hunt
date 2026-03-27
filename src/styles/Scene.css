@@ -1,0 +1,119 @@
+.scene {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 420px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+/* ── forest background ── */
+
+.scene__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(180deg, #0c1628 0%, #162040 40%, #1a3a2a 100%);
+}
+
+/* layered tree silhouettes */
+.scene__trees {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-repeat: repeat-x;
+  background-position: bottom center;
+}
+
+.scene__trees--back {
+  height: 60%;
+  opacity: 0.2;
+  background: linear-gradient(0deg, #0a3d1e 0%, transparent 100%);
+}
+
+.scene__trees--mid {
+  height: 45%;
+  opacity: 0.35;
+  background: linear-gradient(0deg, #0d4f26 0%, transparent 100%);
+}
+
+.scene__trees--front {
+  height: 30%;
+  opacity: 0.5;
+  background: linear-gradient(0deg, #0f5f2e 0%, transparent 100%);
+}
+
+.scene__mist {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(0deg, rgba(15, 23, 42, 0.8) 0%, transparent 100%);
+}
+
+/* ── content ── */
+
+.scene__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 2rem 1.5rem;
+  width: 100%;
+}
+
+.scene__text-box {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(167, 139, 250, 0.25);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  max-width: 500px;
+  width: 100%;
+  animation: sceneTextFadeIn 0.4s ease-out;
+}
+
+.scene__text {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  text-align: center;
+}
+
+.scene__btn {
+  padding: 0.85rem 2.25rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  border-radius: 9999px;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.scene__btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.5);
+}
+
+.scene__btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+@keyframes sceneTextFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

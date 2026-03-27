@@ -1,0 +1,99 @@
+.game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem 1.5rem;
+  background: radial-gradient(ellipse at 50% 0%, #1e1b4b 0%, var(--color-bg) 60%);
+}
+
+.game__header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.game__back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+  transition: color 0.2s;
+}
+
+.game__back-link:hover {
+  color: var(--color-text);
+}
+
+.game__title {
+  font-size: clamp(1.5rem, 5vw, 2.25rem);
+  font-weight: 700;
+  color: var(--color-secondary-light);
+}
+
+.game__subtitle {
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  margin-top: 0.25rem;
+}
+
+.game__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 480px;
+}
+
+@media (min-width: 500px) {
+  .game__grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    max-width: 640px;
+  }
+}
+
+.game__card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.game__card-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem 1.5rem;
+  background: var(--color-bg-card);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  position: relative;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.game__card-icon {
+  font-size: 2.5rem;
+}
+
+.game__card-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.game__card-desc {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.game__card--completed {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+}
+
+.game__card-badge {
+  font-size: 1.25rem;
+}

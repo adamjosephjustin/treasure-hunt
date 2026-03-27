@@ -1,0 +1,87 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+  background: radial-gradient(ellipse at 50% 20%, #1e1b4b 0%, var(--color-bg) 70%);
+}
+
+.home__fireflies {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.home__firefly {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-secondary-light);
+  opacity: 0.5;
+  box-shadow: 0 0 12px 4px rgba(251, 191, 36, 0.4);
+}
+
+.home__firefly:nth-child(1) { top: 15%; left: 20%; }
+.home__firefly:nth-child(2) { top: 30%; left: 70%; }
+.home__firefly:nth-child(3) { top: 55%; left: 40%; }
+.home__firefly:nth-child(4) { top: 70%; left: 80%; }
+.home__firefly:nth-child(5) { top: 85%; left: 15%; }
+.home__firefly:nth-child(6) { top: 40%; left: 90%; }
+
+.home__content {
+  position: relative;
+  z-index: 1;
+  max-width: 600px;
+}
+
+.home__icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.home__title {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--color-secondary-light), var(--color-primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.home__subtitle {
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  color: var(--color-text-muted);
+  margin-bottom: 2.5rem;
+  font-weight: 400;
+}
+
+.home__start-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.1rem 3rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  border-radius: 9999px;
+  box-shadow: 0 6px 24px rgba(124, 58, 237, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home__start-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 10px 32px rgba(124, 58, 237, 0.55);
+}
+
+.home__start-btn:active {
+  transform: translateY(0) scale(0.98);
+}

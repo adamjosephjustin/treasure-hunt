@@ -1,0 +1,21 @@
+.layout__hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+@media (max-width: 500px) {
+  .layout__hud {
+    padding: 0.5rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+  }
+}

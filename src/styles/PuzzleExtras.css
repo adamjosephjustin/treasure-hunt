@@ -1,0 +1,328 @@
+/* CSS for the new advanced puzzles */
+
+/* Pattern Puzzle */
+.pattern__sequence {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 3rem;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+.pattern__item {
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 0.5rem;
+  min-width: 60px;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+.pattern__item--missing {
+  border: 2px dashed rgba(255,255,255,0.5);
+}
+.pattern__choices {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+.pattern__choice {
+  font-size: 2.5rem;
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary);
+  border-radius: 12px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.pattern__choice:hover {
+  background: var(--color-primary-light);
+}
+
+/* Color Mix Puzzle */
+.colormix__target {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: 1rem auto;
+  border: 4px solid white;
+  box-shadow: 0 0 20px rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.colormix__basin {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin: 2rem auto;
+  border: 4px dashed rgba(255,255,255,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  flex-wrap: wrap;
+  padding: 1rem;
+  transition: border-color 0.5s;
+}
+.colormix__drop-in {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  box-shadow: inset -2px -2px 5px rgba(0,0,0,0.3);
+}
+.colormix__sources {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+.colormix__dropper {
+  width: 60px;
+  height: 60px;
+  border-radius: 50% 50% 0 50%;
+  transform: rotate(45deg);
+  border: 2px solid white;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+.colormix__dropper:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Star Connect Puzzle */
+.starconnect__canvas {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: 400px;
+  margin: 0 auto;
+  background: radial-gradient(circle at center, rgba(30,41,59,1) 0%, rgba(15,23,42,1) 100%);
+  border-radius: 20px;
+  border: 2px solid var(--color-primary-dark);
+  overflow: hidden;
+}
+.starconnect__lines {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+}
+.starconnect__point {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #0f172a;
+  box-shadow: 0 0 10px rgba(255,255,255,0.8);
+  transition: all 0.3s;
+}
+.starconnect__point--active {
+  background: #fbbf24;
+  color: white;
+  box-shadow: 0 0 20px #fbbf24;
+}
+
+/* Balance Puzzle */
+.balance__container {
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2rem;
+}
+.balance__beam {
+  width: 300px;
+  height: 10px;
+  background: #cbd5e1;
+  position: relative;
+  border-radius: 5px;
+}
+.balance__fulcrum {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 40px solid #64748b;
+}
+.balance__pan {
+  position: absolute;
+  width: 100px;
+  height: 20px;
+  background: #94a3b8;
+  top: -20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+}
+.balance__pan--left { left: 0; }
+.balance__pan--right { right: 0; }
+.balance__stone {
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+}
+.balance__dropzone {
+  position: absolute;
+  top: -40px;
+  width: 100%;
+  text-align: center;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.5);
+}
+.balance__weights {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+}
+.balance__draggable {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  font-size: 1.5rem;
+  cursor: grab;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+/* Mirror Beam Puzzle */
+.mirror__grid {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  background: #1e293b;
+  padding: 10px;
+  border-radius: 12px;
+  position: relative;
+}
+.mirror__cell {
+  background: #334155;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  position: relative;
+}
+.mirror__object {
+  cursor: pointer;
+  width: 80%;
+  height: 80%;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid white;
+  border-radius: 4px;
+  color: #fff;
+  font-weight: bold;
+}
+.mirror__beam {
+  position: absolute;
+  background: rgba(251, 191, 36, 0.8);
+  box-shadow: 0 0 10px #fbbf24;
+  z-index: 10;
+  transform-origin: top left;
+}
+.mirror__target--lit {
+  text-shadow: 0 0 20px #fbbf24;
+}
+
+/* Mastermind Puzzle */
+.mastermind__board {
+  max-width: 400px;
+  margin: 0 auto;
+  background: #1e293b;
+  padding: 1rem;
+  border-radius: 12px;
+}
+.mastermind__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #334155;
+}
+.mastermind__row--empty { opacity: 0.3; }
+.mastermind__guess {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+}
+.mastermind__slot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.mastermind__pins {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  font-size: 0.8rem;
+}
+.mastermind__input-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid #a855f7;
+}
+.mastermind__submit {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.mastermind__submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.mastermind__palette {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.mastermind__color-btn {
+  font-size: 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+.mastermind__color-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}

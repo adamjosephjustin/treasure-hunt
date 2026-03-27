@@ -1,0 +1,31 @@
+.success-stars {
+  font-size: 2.5rem;
+  margin: 1.5rem 0;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.success-star {
+  filter: grayscale(1) opacity(0.3);
+}
+
+.success-star--active {
+  filter: grayscale(0) opacity(1);
+  text-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
+}
+
+.puzzle-loading {
+  font-size: 1.5rem;
+  color: var(--color-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1); }
+}

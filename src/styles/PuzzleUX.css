@@ -1,0 +1,65 @@
+/* Styles for UX Polish elements */
+
+.level__back-floating {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  z-index: 50;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+.level__back-floating:hover {
+  background: rgba(79, 70, 229, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.4);
+}
+
+.puzzle__instruction-box {
+  background: rgba(15, 23, 42, 0.6);
+  border-left: 4px solid var(--color-primary);
+  padding: 1rem;
+  margin: 1rem auto;
+  border-radius: 8px;
+  max-width: 90%;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.puzzle__instruction-box strong {
+  color: #fbbf24;
+}
+
+/* Fancy Glowing Button */
+.btn-glow {
+  position: relative;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899, #6366f1);
+  background-size: 300% auto;
+  color: white;
+  border-radius: 30px;
+  cursor: pointer;
+  z-index: 1;
+  transition: 0.5s;
+  animation: bgPulse 3s infinite linear;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+}
+
+.btn-glow:hover {
+  background-position: right center;
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(236, 72, 153, 0.8);
+}
+
+@keyframes bgPulse {
+  0% { background-position: 0% center; }
+  100% { background-position: 100% center; }
+}

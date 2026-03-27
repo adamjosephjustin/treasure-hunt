@@ -1,0 +1,34 @@
+.reward-burst {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.reward-burst__star {
+  position: absolute;
+  font-size: 1.5rem;
+  opacity: 0;
+  animation: reward-fly 1.2s forwards cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes reward-fly {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(0, -20px) scale(1.5);
+  }
+  100% {
+    opacity: 0;
+    /* target top bar area roughly at top: 20px, left: 50% */
+    left: 50%;
+    top: 20px;
+    transform: translate(-50%, 0) scale(0.5);
+  }
+}

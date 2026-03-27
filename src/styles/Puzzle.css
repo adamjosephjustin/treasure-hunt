@@ -1,0 +1,353 @@
+/* ══════════════════════════════════════
+   Shared puzzle styles
+   ══════════════════════════════════════ */
+
+.puzzle {
+  width: 100%;
+  max-width: 600px;
+  background: var(--color-bg-card);
+  border: 2px solid rgba(167, 139, 250, 0.2);
+  border-radius: var(--radius);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  animation: pageEnter 0.45s ease-out;
+}
+
+.puzzle--correct {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+}
+
+.puzzle--wrong {
+  border-color: #ef4444;
+}
+
+.puzzle__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-secondary-light);
+  margin-bottom: 0.25rem;
+}
+
+.puzzle__instruction {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+/* feedback banner */
+.puzzle__feedback {
+  margin-top: 1.25rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.puzzle__feedback--correct {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.puzzle__feedback--wrong {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+/* shake animation */
+.shake {
+  animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-8px); }
+  30% { transform: translateX(8px); }
+  45% { transform: translateX(-6px); }
+  60% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
+  90% { transform: translateX(3px); }
+}
+
+/* ══════════════════════════════════════
+   Number Bridge
+   ══════════════════════════════════════ */
+
+.number__sequence {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.number__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(167, 139, 250, 0.25);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.number__item--missing {
+  border-color: var(--color-secondary-light);
+  color: var(--color-secondary-light);
+  background: rgba(251, 191, 36, 0.08);
+  font-size: 1.25rem;
+}
+
+.number__choices {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.number__choice {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(167, 139, 250, 0.2);
+  transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.number__choice:hover {
+  transform: scale(1.08);
+  border-color: var(--color-primary-light);
+}
+
+.number__choice:active {
+  transform: scale(0.95);
+}
+
+.number__choice--correct {
+  border-color: var(--color-accent);
+  background: rgba(16, 185, 129, 0.15);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.3);
+}
+
+.number__choice--wrong {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+  animation: shake 0.5s ease;
+}
+
+/* ══════════════════════════════════════
+   Shape Match
+   ══════════════════════════════════════ */
+
+.shape__pieces {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.shape__piece {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(167, 139, 250, 0.2);
+  border-radius: 12px;
+  cursor: grab;
+  transition: transform 0.15s, opacity 0.3s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.shape__piece:active {
+  cursor: grabbing;
+  transform: scale(1.1);
+}
+
+.shape__piece--used {
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.shape__emoji {
+  font-size: 2rem;
+}
+
+.shape__label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.shape__slots {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.shape__slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border: 2px dashed rgba(167, 139, 250, 0.3);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.shape__slot:hover {
+  border-color: var(--color-primary-light);
+  background: rgba(167, 139, 250, 0.05);
+}
+
+.shape__slot--filled {
+  border-style: solid;
+  border-color: var(--color-accent);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.shape__slot-label {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+/* ══════════════════════════════════════
+   Memory Lights
+   ══════════════════════════════════════ */
+
+.memory__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  max-width: 260px;
+  margin: 0 auto 1.5rem;
+}
+
+.memory__light {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.15s;
+}
+
+.memory__light:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.memory__light:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.memory__light:disabled {
+  cursor: default;
+}
+
+.memory__light-inner {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 13px;
+  background: var(--light-color);
+  opacity: 0.2;
+  transition: opacity 0.15s;
+}
+
+.memory__light--active .memory__light-inner {
+  opacity: 1;
+  box-shadow: 0 0 24px var(--light-glow), inset 0 0 16px rgba(255,255,255,0.2);
+}
+
+.memory__dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.memory__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.memory__dot--filled {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+}
+
+/* ══════════════════════════════════════
+   Success overlay for "Next Level"
+   ══════════════════════════════════════ */
+
+.puzzle-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+  animation: pageEnter 0.45s ease-out;
+}
+
+.puzzle-success__icon {
+  font-size: 3.5rem;
+}
+
+.puzzle-success__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.puzzle-success__text {
+  color: var(--color-text-muted);
+  font-size: 1rem;
+}
+
+.puzzle-success__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 2.5rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-accent), #059669);
+  border-radius: 9999px;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.puzzle-success__btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 28px rgba(16, 185, 129, 0.45);
+}
+
+.puzzle-success__btn:active {
+  transform: translateY(0) scale(0.97);
+}
