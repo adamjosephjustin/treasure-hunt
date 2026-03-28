@@ -465,6 +465,237 @@ const chessPuzzles = [
     description: 'Castle queenside and prepare the devastating h4-h5 pawn storm against the Sicilian Dragon!',
     difficulty: 7,
     theme: 'Opposite Side Castling Attack'
+  },
+
+  // ── TIER 8: Multi-Move — Mate in 2 (51–58) ────────────────
+  {
+    id: 51,
+    fen: '3r2k1/5ppp/8/8/8/8/4QPPP/4R1K1 w - - 0 1',
+    solution: ['Qe8+', 'Rxe8', 'Rxe8#'],
+    title: 'Royal Sacrifice',
+    description: 'Sacrifice your queen on the back rank, then deliver checkmate with the rook! (2 moves)',
+    difficulty: 8,
+    theme: 'Queen Sacrifice + Back Rank'
+  },
+  {
+    id: 52,
+    fen: '1r4k1/5ppp/8/8/8/8/Q4PPP/1R4K1 w - - 0 1',
+    solution: ['Rxb8+', 'Kh8', 'Qa1#'],
+    title: 'Clearance Capture',
+    description: 'Eliminate the defender first, then unleash a deadly queen check on the long diagonal! (2 moves)',
+    difficulty: 8,
+    theme: 'Clearance + Diagonal Mate'
+  },
+  {
+    id: 53,
+    fen: 'r1b2rk1/ppppqppp/2n5/8/2B1R3/8/PPP2PPP/R1BQ2K1 w - - 0 1',
+    solution: ['Re8', 'Qxe8', 'Qd5'],
+    title: 'Overloaded Defender',
+    description: 'The queen guards too many things at once. Force it to capture, then exploit the weakness! (2 moves)',
+    difficulty: 8,
+    theme: 'Overloaded Piece'
+  },
+  {
+    id: 54,
+    fen: '4r1k1/5ppp/8/3N4/8/4Q3/5PPP/6K1 w - - 0 1',
+    solution: ['Nf6+', 'Kh8', 'Qe7'],
+    title: 'Knight Check Domination',
+    description: 'Fork the king with a knight check, then position your queen for a crushing attack! (2 moves)',
+    difficulty: 8,
+    theme: 'Knight Fork + Queen Pressure'
+  },
+  {
+    id: 55,
+    fen: '2r3k1/5ppp/8/8/8/2B5/5PPP/4R1K1 w - - 0 1',
+    solution: ['Re8+', 'Rxe8', 'Bd4'],
+    title: 'Exchange then Dominate',
+    description: 'Trade rooks on the back rank, then activate your bishop to control the board! (2 moves)',
+    difficulty: 8,
+    theme: 'Simplification + Bishop Dominance'
+  },
+  {
+    id: 56,
+    fen: '6k1/5ppp/8/1r6/8/4B3/5PPP/R5K1 w - - 0 1',
+    solution: ['Ra8+', 'Rb8', 'Rxb8#'],
+    title: 'Corridor Mate',
+    description: 'Check on the back rank and force the rook to interpose, then capture with checkmate! (2 moves)',
+    difficulty: 8,
+    theme: 'Back Rank Forcing'
+  },
+  {
+    id: 57,
+    fen: 'r4rk1/ppp2ppp/8/3qN3/8/2P5/PP3PPP/R2QR1K1 w - - 0 1',
+    solution: ['Nf7', 'Rxf7', 'Qxd5'],
+    title: 'Knight Deflection',
+    description: 'Sacrifice the knight to deflect the rook, then capture the undefended queen! (2 moves)',
+    difficulty: 8,
+    theme: 'Deflection Sacrifice'
+  },
+  {
+    id: 58,
+    fen: '4r1k1/ppp2ppp/8/4N3/1b6/8/PPPQ1PPP/4R1K1 w - - 0 1',
+    solution: ['Nf7', 'Kh8', 'Qxb4'],
+    title: 'Fork and Grab',
+    description: 'Your knight threatens a royal fork! After the king retreats, grab the hanging bishop. (2 moves)',
+    difficulty: 8,
+    theme: 'Knight Threat + Material Win'
+  },
+
+  // ── TIER 9: Multi-Move — Mate in 3 (59–66) ────────────────
+  {
+    id: 59,
+    fen: '6k1/5ppp/8/8/8/8/4RPPP/1R4K1 w - - 0 1',
+    solution: ['Rb8+', 'Kh8', 'Ree8', 'g6', 'Rb7'],
+    title: 'Double Rook Ladder',
+    description: 'Use your two rooks to systematically push the king into a mating net! (3 moves)',
+    difficulty: 9,
+    theme: 'Rook Coordination'
+  },
+  {
+    id: 60,
+    fen: '3r2k1/pp3ppp/8/8/8/2B5/PP2QPPP/4R1K1 w - - 0 1',
+    solution: ['Qe8+', 'Rxe8', 'Rxe8+', 'Kh7', 'Bd2'],
+    title: 'Queen Sac → Rook Invasion',
+    description: 'Sacrifice the queen to infiltrate, then regroup your bishop for the final squeeze! (3 moves)',
+    difficulty: 9,
+    theme: 'Queen Sacrifice + Rook Endgame'
+  },
+  {
+    id: 61,
+    fen: 'r3k2r/ppp2ppp/2n5/3Np3/2B5/8/PPP2PPP/R3K2R w KQkq - 0 1',
+    solution: ['Nf6+', 'Ke7', 'Nd5+', 'Ke8', 'Bb5'],
+    title: 'Knight Dance',
+    description: 'Bounce your knight with tempo checks to set up a crushing bishop pin! (3 moves)',
+    difficulty: 9,
+    theme: 'Knight Maneuver + Pin'
+  },
+  {
+    id: 62,
+    fen: 'r1bq1rk1/pppp1ppp/8/4N3/2B1n3/8/PPPP1PPP/R1BQ1RK1 w - - 0 1',
+    solution: ['Bxf7+', 'Kh8', 'Ng6+', 'hxg6', 'Qh5+'],
+    title: 'Greek Gift Blitz',
+    description: 'Sacrifice on f7, follow up with a knight fork, then launch the queen for a crushing attack! (3 moves)',
+    difficulty: 9,
+    theme: 'Bishop Sacrifice + Knight Fork'
+  },
+  {
+    id: 63,
+    fen: '2kr4/ppp2ppp/8/8/4R3/8/PPP1QPPP/6K1 w - - 0 1',
+    solution: ['Re8+', 'Rd8', 'Qe6+', 'Kb8', 'Rxd8#'],
+    title: 'Rook-Queen Barrage',
+    description: 'Check with the rook, force an interposition, infiltrate with the queen, then deliver mate! (3 moves)',
+    difficulty: 9,
+    theme: 'Major Piece Coordination'
+  },
+  {
+    id: 64,
+    fen: 'r4rk1/ppp2ppp/3b4/8/8/2N5/PPP1QPPP/R3R1K1 w - - 0 1',
+    solution: ['Nd5', 'Be5', 'Qe4', 'Bxe4', 'Rxe4'],
+    title: 'Outpost → Exchange',
+    description: 'Plant the knight on d5, provoke a bishop move, then trade favorably! (3 moves)',
+    difficulty: 9,
+    theme: 'Positional Squeeze'
+  },
+  {
+    id: 65,
+    fen: '4rrk1/5ppp/8/3N4/8/8/4QPPP/4R1K1 w - - 0 1',
+    solution: ['Nf6+', 'Kh8', 'Qe7', 'Rf7', 'Qe8+'],
+    title: 'Knight + Queen Assault',
+    description: 'Check with the knight, position the queen, then force a decisive rook exchange! (3 moves)',
+    difficulty: 9,
+    theme: 'Knight + Queen Tandem'
+  },
+  {
+    id: 66,
+    fen: 'r2q1rk1/pp3ppp/2p5/4N3/3P4/8/PPP2PPP/R2QR1K1 w - - 0 1',
+    solution: ['Nxf7', 'Rxf7', 'Re8', 'Qxe8', 'Qxe8+'],
+    title: 'Exchange Cascade',
+    description: 'Sacrifice the knight, win the exchange, then trade down to reach a winning position! (3 moves)',
+    difficulty: 9,
+    theme: 'Tactical Sequence'
+  },
+
+  // ── TIER 10: Multi-Move — Mate in 4–5 (67–75) ─────────────
+  {
+    id: 67,
+    fen: '6k1/5ppp/8/8/8/8/1R3PPP/1R4K1 w - - 0 1',
+    solution: ['Rb8+', 'Kh8', 'R1b7', 'h6', 'Rg8+', 'Kh7', 'Rbg7#'],
+    title: 'Rook Storm',
+    description: 'Systematically cut off escape routes with your two rooks until the king is cornered! (4 moves)',
+    difficulty: 10,
+    theme: 'Double Rook Mating Attack'
+  },
+  {
+    id: 68,
+    fen: 'r3k3/ppp2ppp/8/3N4/4R3/8/PPP1QPPP/6K1 w - - 0 1',
+    solution: ['Re8+', 'Rxe8', 'Qxe8+', 'Kd7', 'Qe7+', 'Kc8', 'Nc7'],
+    title: 'Full Court Press',
+    description: 'Sacrifice the rook, recapture with queen, then chase the king into a knight trap! (4 moves)',
+    difficulty: 10,
+    theme: 'Rook Sacrifice + Queen Chase'
+  },
+  {
+    id: 69,
+    fen: '2r3k1/5ppp/4p3/3pN3/8/8/4QPPP/6K1 w - - 0 1',
+    solution: ['Nxf7', 'Kxf7', 'Qh5+', 'Kg8', 'Qe8+', 'Kh7', 'Qxc8'],
+    title: 'Knight Sacrifice Sweep',
+    description: 'Crack open the king with a knight sacrifice, then use queen checks to win the rook! (4 moves)',
+    difficulty: 10,
+    theme: 'Sacrifice + Queen Infiltration'
+  },
+  {
+    id: 70,
+    fen: 'r1bqk2r/pppp1ppp/2n5/2b1p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 1',
+    solution: ['Nxe5', 'Nxe5', 'Qh5', 'Ng6', 'Qxf7+', 'Kd8', 'Qxg6'],
+    title: 'Fried Liver Prep',
+    description: 'Capture the center pawn, aim the queen at f7, and shatter the kingside! (4 moves)',
+    difficulty: 10,
+    theme: 'Aggressive Opening Attack'
+  },
+  {
+    id: 71,
+    fen: '2r3k1/pp3ppp/8/8/4RB2/8/PP3PPP/6K1 w - - 0 1',
+    solution: ['Re8+', 'Rxe8', 'Bd6', 'Re1+', 'Kf2', 'Re6', 'Bc7'],
+    title: 'Bishop Domination',
+    description: 'Trade the rooks, activate the bishop, and slowly suffocate your opponent! (4 moves)',
+    difficulty: 10,
+    theme: 'Endgame Technique'
+  },
+  {
+    id: 72,
+    fen: 'r4rk1/ppp2ppp/2n5/3Np3/4P3/8/PPP2PPP/R3QRK1 w - - 0 1',
+    solution: ['Nf6+', 'Kh8', 'Qh4', 'h6', 'Qg4', 'Kh7', 'Qg6+', 'Kh8', 'Qg7#'],
+    title: 'Smothered Siege',
+    description: 'Plant the knight on f6, build up with the queen, and deliver a suffocating checkmate! (5 moves)',
+    difficulty: 10,
+    theme: 'Knight + Queen Mating Net'
+  },
+  {
+    id: 73,
+    fen: '2r3k1/pp3ppp/3p4/8/4P3/2B5/PP3PPP/R5K1 w - - 0 1',
+    solution: ['Ra8', 'Rxa8', 'Bxd6', 'Ra1+', 'Kf2', 'Ra2', 'Bc7'],
+    title: 'Pawn Hunt Convert',
+    description: 'Trade rooks favorably, collect the weak d-pawn, and convert your material advantage! (4 moves)',
+    difficulty: 10,
+    theme: 'Endgame Conversion'
+  },
+  {
+    id: 74,
+    fen: 'r3k2r/ppp1qppp/2n1p3/3pN3/3P4/2P5/PP2QPPP/R3K2R w KQkq - 0 1',
+    solution: ['Nxc6', 'bxc6', 'Qa6', 'Qd7', 'Qa8+', 'Qd8', 'Qxc6+'],
+    title: 'Demolition Derby',
+    description: 'Shatter the queenside pawns, infiltrate with the queen, and gather material with checks! (4 moves)',
+    difficulty: 10,
+    theme: 'Pawn Structure Destruction'
+  },
+  {
+    id: 75,
+    fen: 'r2qk2r/ppp2ppp/2nb4/3np3/8/3B1N2/PPP1QPPP/R1B1K2R w KQkq - 0 1',
+    solution: ['Nxe5', 'Bxe5', 'Bxh7', 'Nf4', 'Qh5', 'Nxh5', 'Bg6+', 'Ke7', 'Bxh5'],
+    title: 'The Grand Sacrifice',
+    description: 'A multi-piece sacrifice sequence capped by a spectacular bishop journey across the board! (5 moves)',
+    difficulty: 10,
+    theme: 'Complex Combination'
   }
 ];
 

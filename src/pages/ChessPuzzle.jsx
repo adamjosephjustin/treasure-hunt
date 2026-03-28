@@ -76,7 +76,7 @@ export default function ChessPuzzle() {
           animate={{ opacity: 1, y: 0 }}
           className="chess-puzzle-page__actions"
         >
-          {puzzleId < 50 ? (
+          {puzzleId < 75 ? (
             <button className="btn-glow" onClick={() => {
               audioManager.playSFX('click');
               navigate(`/chess/${puzzleId + 1}`);

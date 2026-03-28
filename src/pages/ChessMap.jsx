@@ -5,7 +5,7 @@ import AnimatedPage from '../components/AnimatedPage';
 import '../styles/Chess.css';
 
 const difficultyLabel = (d) => {
-  const labels = { 1: 'Beginner', 2: 'Easy', 3: 'Medium', 4: 'Hard', 5: 'Expert', 6: 'Master', 7: 'Grandmaster' };
+  const labels = { 1: 'Beginner', 2: 'Easy', 3: 'Medium', 4: 'Hard', 5: 'Expert', 6: 'Master', 7: 'Grandmaster', 8: 'Mate in 2', 9: 'Mate in 3', 10: 'Mate in 4+' };
   return labels[d] || 'Unknown';
 };
 
@@ -18,7 +18,10 @@ const tierIcons = {
   4: '♛',
   5: '♚',
   6: '🏆',
-  7: '👑'
+  7: '👑',
+  8: '⚔️',
+  9: '🔥',
+  10: '💀'
 };
 
 export default function ChessMap() {
@@ -33,7 +36,7 @@ export default function ChessMap() {
 
       <div className="chess-map__header">
         <h1>♟ Chess Grandmaster Trials</h1>
-        <p>50 tactical puzzles — from beginner to grandmaster. Find the best move!</p>
+        <p>75 tactical puzzles — from beginner to grandmaster. Find the best move!</p>
       </div>
 
       <div className="chess-map__grid">
