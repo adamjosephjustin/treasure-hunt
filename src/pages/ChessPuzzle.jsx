@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ChessBoard from '../chess/ChessBoard';
 import chessPuzzles from '../chess/chessPuzzles';
@@ -8,6 +8,20 @@ import { audioManager } from '../utils/audio';
 import '../styles/Chess.css';
 import '../styles/PuzzleUX.css';
 
+function getCompletedPuzzles() {
+  try {
+    return JSON.parse(localStorage.getItem('chess_completed') || '[]');
+  } catch { return []; }
+}
+
+function markPuzzleCompleted(id) {
+  const completed = getCompletedPuzzles();
+  if (!completed.includes(id)) {
+    completed.push(id);
+    localStorage.setItem('chess_completed', JSON.stringify(completed));
+  }
+}
+
 export default function ChessPuzzle() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -15,6 +29,17 @@ export default function ChessPuzzle() {
   const puzzle = chessPuzzles.find(p => p.id === puzzleId);
   const [solved, setSolved] = useState(false);
   const [attempts, setAttempts] = useState(0);
+
+  // Pause background music on chess pages
+  useEffect(() => {
+    if (audioManager.music) audioManager.music.pause();
+    return () => {
+      // Resume music when leaving chess if not muted
+      if (!audioManager.muted && audioManager.music) {
+        audioManager.music.play().catch(() => {});
+      }
+    };
+  }, []);
 
   if (!puzzle) {
     return (
@@ -27,22 +52,20 @@ export default function ChessPuzzle() {
     );
   }
 
-  const playerColor = puzzle.fen.split(' ')[1]; // 'w' or 'b'
+  const playerColor = puzzle.fen.split(' ')[1];
 
   const handleSolved = () => {
-    audioManager.playSFX('correct');
     setSolved(true);
+    markPuzzleCompleted(puzzleId);
   };
 
   const handleFailed = () => {
-    audioManager.playSFX('wrong');
     setAttempts(a => a + 1);
   };
 
   return (
     <AnimatedPage className="chess-puzzle-page">
       <button className="level__back-floating" onClick={() => {
-        audioManager.playSFX('click');
         navigate('/chess');
       }}>
         🏠 Map
@@ -62,7 +85,7 @@ export default function ChessPuzzle() {
       </div>
 
       <ChessBoard
-        key={attempts} // force re-mount on retry
+        key={attempts}
         fen={puzzle.fen}
         solution={puzzle.solution}
         playerColor={playerColor}
@@ -78,14 +101,12 @@ export default function ChessPuzzle() {
         >
           {puzzleId < 100 ? (
             <button className="btn-glow" onClick={() => {
-              audioManager.playSFX('click');
               navigate(`/chess/${puzzleId + 1}`);
             }}>
               Next Puzzle →
             </button>
           ) : (
             <button className="btn-glow" onClick={() => {
-              audioManager.playSFX('click');
               navigate('/chess');
             }}>
               🏆 All Puzzles Complete!
