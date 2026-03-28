@@ -696,6 +696,235 @@ const chessPuzzles = [
     description: 'A multi-piece sacrifice sequence capped by a spectacular bishop journey across the board! (5 moves)',
     difficulty: 10,
     theme: 'Complex Combination'
+  },
+
+  // ── TIER 11: Legendary (76–88) — Multi-Move Extreme ────────
+  {
+    id: 76,
+    fen: '2r3k1/p4ppp/1p6/3N4/8/8/PP2QPPP/4R1K1 w - - 0 1',
+    solution: ['Ne7+', 'Kh8', 'Qe6'],
+    title: 'Knight Fork Trap',
+    description: 'Check with the knight to win a tempo, then dominate with queen centralization! (2 moves)',
+    difficulty: 11,
+    theme: 'Knight Check + Queen Power'
+  },
+  {
+    id: 77,
+    fen: 'r4rk1/pp3ppp/2p5/8/3Pn3/4BN2/PP3PPP/R2QR1K1 w - - 0 1',
+    solution: ['Bd2', 'Nc3', 'Bxc3'],
+    title: 'Trap the Knight',
+    description: 'Retreat the bishop to lure the knight into a trap, then capture it cleanly! (2 moves)',
+    difficulty: 11,
+    theme: 'Piece Trap'
+  },
+  {
+    id: 78,
+    fen: 'r2q1rk1/ppp2ppp/3b1n2/3Pp3/8/5N2/PPP1BPPP/R1BQ1RK1 w - - 0 1',
+    solution: ['dxe6', 'fxe6', 'Ng5', 'Qe7', 'Nxe6'],
+    title: 'Pawn Break Sequence',
+    description: 'Break through the center, then exploit the weakened pawn chain with a knight invasion! (3 moves)',
+    difficulty: 11,
+    theme: 'Central Breakthrough'
+  },
+  {
+    id: 79,
+    fen: '3r2k1/pp3ppp/2p1bn2/4N3/8/6P1/PPP1PPBP/3R2K1 w - - 0 1',
+    solution: ['Nxc6', 'bxc6', 'Bxc6', 'Rb8', 'Bxa8'],
+    title: 'Pawn Chain Collapse',
+    description: 'Sacrifice the knight to shatter the queenside, then sweep up material with the bishop! (3 moves)',
+    difficulty: 11,
+    theme: 'Structural Demolition'
+  },
+  {
+    id: 80,
+    fen: 'r1bq1rk1/pp2ppbp/2np1np1/8/3NP3/2N1BP2/PPPQ2PP/R3KB1R w KQ - 0 1',
+    solution: ['Bh6', 'Bxh6', 'Qxh6', 'e5', 'Nd5'],
+    title: 'Dragon Slayer II',
+    description: 'Exchange the fianchettoed bishop, infiltrate with the queen, then plant the knight on d5! (3 moves)',
+    difficulty: 11,
+    theme: 'Anti-Dragon Attack'
+  },
+  {
+    id: 81,
+    fen: 'r3r1k1/pp3ppp/2p2n2/3p4/3P4/2N2N2/PPP2PPP/R3R1K1 w - - 0 1',
+    solution: ['Ne5', 'Nd7', 'Nxd5', 'cxd5', 'Nxd7'],
+    title: 'Central Knight Storm',
+    description: 'Centralize your knights, win the isolated pawn, then collect material! (3 moves)',
+    difficulty: 11,
+    theme: 'Knight Domination'
+  },
+  {
+    id: 82,
+    fen: '2r2rk1/pp3ppp/2n1p3/3pP3/3P4/2PB1N2/PP3PPP/R4RK1 w - - 0 1',
+    solution: ['Bxh7+', 'Kxh7', 'Ng5+', 'Kg8', 'Qh5'],
+    title: 'Greek Gift Classic',
+    description: 'The classic bishop sacrifice on h7 followed by knight check and queen attack! (3 moves)',
+    difficulty: 11,
+    theme: 'Greek Gift Sacrifice'
+  },
+  {
+    id: 83,
+    fen: 'r2q1rk1/ppp1bppp/2n1p3/3pN3/3P1B2/2P5/PP2QPPP/R3R1K1 w - - 0 1',
+    solution: ['Nxc6', 'bxc6', 'Qe5', 'f6', 'Qg3'],
+    title: 'Positional Crush',
+    description: 'Exchange the powerfully placed knight, then redirect the queen for a devastating kingside attack! (3 moves)',
+    difficulty: 11,
+    theme: 'Piece Redirection'
+  },
+  {
+    id: 84,
+    fen: 'r4rk1/ppp2ppp/3q1n2/3p4/3P4/2NBPN2/PPP2PPP/R2Q1RK1 w - - 0 1',
+    solution: ['Ne5', 'Qe7', 'f4', 'Nd7', 'Nxd7', 'Qxd7', 'Qh5'],
+    title: 'Relentless Pressure',
+    description: 'Centralize the knight, push the f-pawn, trade pieces, then pivot the queen for a kingside assault! (4 moves)',
+    difficulty: 11,
+    theme: 'Slow Buildup'
+  },
+  {
+    id: 85,
+    fen: 'r2q1rk1/pp2bppp/2n1pn2/3p4/3P1B2/2NBPN2/PPP2PPP/R2QK2R w KQ - 0 1',
+    solution: ['O-O', 'Ne4', 'Bxe4', 'dxe4', 'Nd2', 'f5', 'Nxe4'],
+    title: 'Castle Then Strike',
+    description: 'Secure the king, trade pieces to open lines, then win the advanced pawn! (4 moves)',
+    difficulty: 11,
+    theme: 'Methodical Attack'
+  },
+  {
+    id: 86,
+    fen: '2rq1rk1/pp2ppbp/2np1np1/8/3PP3/2N2N2/PP2BPPP/R1BQR1K1 w - - 0 1',
+    solution: ['d5', 'Ne5', 'Nxe5', 'dxe5', 'Bc4'],
+    title: 'Central Pawn Roller',
+    description: 'Push the d-pawn to displace the knight, exchange favorably, then activate the bishop! (3 moves)',
+    difficulty: 11,
+    theme: 'Pawn Center Advance'
+  },
+  {
+    id: 87,
+    fen: 'r1bq1rk1/ppp1npbp/3p1np1/3Pp3/2P1P3/2N2N2/PP2BPPP/R1BQ1RK1 w - - 0 1',
+    solution: ['Bg5', 'h6', 'Be3', 'Ng4', 'Bd2'],
+    title: 'Patience Pays',
+    description: 'Maneuver the bishop to provoke weaknesses, then reposition for a better diagonal! (3 moves)',
+    difficulty: 11,
+    theme: 'Bishop Maneuver'
+  },
+  {
+    id: 88,
+    fen: 'r1b2rk1/ppq1bppp/2n1pn2/2pp4/3P1B2/2NBPN2/PPP2PPP/R2Q1RK1 w - - 0 1',
+    solution: ['dxc5', 'Bxc5', 'Bxc5', 'Qxc5', 'Na4'],
+    title: 'Exchange & Exploit',
+    description: 'Trade in the center, exchange bishops, then fork the queen and c5 square with the knight! (3 moves)',
+    difficulty: 11,
+    theme: 'Tactical Exchange'
+  },
+
+  // ── TIER 12: Impossible (89–100) — Maximum Difficulty ──────
+  {
+    id: 89,
+    fen: 'r3r1k1/ppq2ppp/2p1bn2/3pN3/3P1B2/2P1P3/PPQ2PPP/R3R1K1 w - - 0 1',
+    solution: ['Nxc6', 'bxc6', 'Bxf6', 'gxf6', 'Qf5'],
+    title: 'Double Piece Sacrifice',
+    description: 'Sacrifice the knight AND bishop to rip apart the kingside pawn cover! (3 moves)',
+    difficulty: 12,
+    theme: 'Double Sacrifice'
+  },
+  {
+    id: 90,
+    fen: 'r4rk1/pp2qppp/2n1p3/2ppP3/3P4/P1PB1N2/1P3PPP/R2QR1K1 w - - 0 1',
+    solution: ['Bxh7+', 'Kxh7', 'Ng5+', 'Kg8', 'Qh5', 'Qf8', 'Qxf7+'],
+    title: 'Greek Gift Fury',
+    description: 'The full Greek Gift pattern: bishop sac, knight check, queen infiltration for the kill! (4 moves)',
+    difficulty: 12,
+    theme: 'Classic Greek Gift'
+  },
+  {
+    id: 91,
+    fen: 'r1bq1rk1/pp3ppp/2n1pn2/2bp4/3P4/2NBPN2/PPP1QPPP/R1B1K2R w KQ - 0 1',
+    solution: ['dxc5', 'Bxc5', 'e4', 'dxe4', 'Nxe4', 'Nxe4', 'Qxe4'],
+    title: 'Central Explosion',
+    description: 'Trigger a tactical sequence of captures in the center to emerge with a dominant queen! (4 moves)',
+    difficulty: 12,
+    theme: 'Central Liquidation'
+  },
+  {
+    id: 92,
+    fen: 'r2q1rk1/pp1n1ppp/2p1pn2/3p4/1bPP4/2NBPN2/PP3PPP/R1BQ1RK1 w - - 0 1',
+    solution: ['cxd5', 'exd5', 'Nh4', 'Re8', 'Nf5'],
+    title: 'Knight Redeployment',
+    description: 'Exchange center pawns, swing the knight to h4 then plant it on f5 for maximum pressure! (3 moves)',
+    difficulty: 12,
+    theme: 'Knight Maneuver'
+  },
+  {
+    id: 93,
+    fen: 'r1b2rk1/ppq1bppp/2nppn2/8/3NP3/2N1BP2/PPPQ2PP/R3KB1R w KQ - 0 1',
+    solution: ['O-O-O', 'a6', 'g4', 'b5', 'g5', 'Nd7', 'Nd5'],
+    title: 'Yugoslav Attack',
+    description: 'Castle long, launch the g-pawn storm, drive back the knight, plant yours on d5! (4 moves)',
+    difficulty: 12,
+    theme: 'Kingside Pawn Storm'
+  },
+  {
+    id: 94,
+    fen: 'r2qk2r/pp2bppp/2n1pn2/3p4/3P1B2/2PB1N2/PP2QPPP/RN2K2R w KQkq - 0 1',
+    solution: ['Nbd2', 'O-O', 'O-O', 'Re8', 'Ne5', 'Nxe5', 'Bxe5'],
+    title: 'Complete Setup',
+    description: 'Develop the final knight, castle, then plant a knight on e5 and exchange favorably! (4 moves)',
+    difficulty: 12,
+    theme: 'Harmonious Development'
+  },
+  {
+    id: 95,
+    fen: 'r1b1r1k1/pp3ppp/2n1pn2/q1bp4/3P4/2NBPN2/PP2BPPP/R1BQ1RK1 w - - 0 1',
+    solution: ['dxc5', 'Bxc5', 'b4', 'Bxb4', 'Nxd5', 'exd5', 'Bxd5'],
+    title: 'Pawn Lever Masterclass',
+    description: 'Use a pawn lever to deflect the bishop, then win the center pawn with a knight sacrifice! (4 moves)',
+    difficulty: 12,
+    theme: 'Pawn Lever'
+  },
+  {
+    id: 96,
+    fen: 'r3r1k1/pp2qppp/2n1p3/2ppP1B1/3P4/2P2N2/PP2QPPP/R3R1K1 w - - 0 1',
+    solution: ['Bxf6', 'Qxf6', 'Qe3', 'Qe7', 'Qh6', 'f5', 'exf6'],
+    title: 'Dark Square Domination',
+    description: 'Exchange the bishop to weaken the dark squares, infiltrate with the queen, then crash through! (4 moves)',
+    difficulty: 12,
+    theme: 'Color Complex Weakness'
+  },
+  {
+    id: 97,
+    fen: 'r1bqk2r/ppp1nppp/3p4/3Pp3/2P1P1b1/2N2N2/PP3PPP/R1BQKB1R w KQkq - 0 1',
+    solution: ['h3', 'Bxf3', 'Qxf3', 'Ng6', 'Bd3', 'Be7', 'O-O'],
+    title: 'Win the Bishop Pair',
+    description: 'Force the bishop to commit, capture it, develop smoothly, and castle with the two bishops! (4 moves)',
+    difficulty: 12,
+    theme: 'Bishop Pair Advantage'
+  },
+  {
+    id: 98,
+    fen: 'r2q1rk1/1pp2ppp/p1n1pn2/3p4/1bPP4/2N1PN2/PPB2PPP/R1BQ1RK1 w - - 0 1',
+    solution: ['a3', 'Ba5', 'cxd5', 'exd5', 'Bd3', 'Re8', 'Bc2'],
+    title: 'Slow Squeeze',
+    description: 'Chase the bishop, open the center, then reposition your pieces for maximum pressure! (4 moves)',
+    difficulty: 12,
+    theme: 'Positional Grinding'
+  },
+  {
+    id: 99,
+    fen: 'r2qr1k1/pp3ppp/2p1bn2/3pN3/3P1B2/2P1P3/PP3PPP/R2QR1K1 w - - 0 1',
+    solution: ['Nxf7', 'Kxf7', 'Bxc7', 'Qd7', 'Bf4', 'Nd7', 'Qh5+', 'Kf8', 'Qxh7'],
+    title: 'The Immortal Exchange',
+    description: 'Sacrifice the knight on f7, win the queen, reposition, then launch a devastating 5-move king hunt! (5 moves)',
+    difficulty: 12,
+    theme: 'Sacrifice + King Hunt'
+  },
+  {
+    id: 100,
+    fen: 'r1bq1rk1/pp2nppp/2n1p3/2ppP3/3P4/P1PB1N2/1P3PPP/R1BQR1K1 w - - 0 1',
+    solution: ['Bxh7+', 'Kxh7', 'Ng5+', 'Kg6', 'Qd3+', 'f5', 'exf6', 'Nxf6', 'Qg3'],
+    title: 'Puzzle 100: The Final Boss',
+    description: 'Bishop sacrifice, knight check, queen infiltration, pawn breakthrough — a 5-move masterpiece to claim grandmaster glory! (5 moves)',
+    difficulty: 12,
+    theme: 'Ultimate Combination'
   }
 ];
 
