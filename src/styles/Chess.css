@@ -1,0 +1,321 @@
+/* ═════════════════════════════════════════════════
+   Chess Puzzles — Styling
+   ═════════════════════════════════════════════════ */
+
+/* Board Wrapper */
+.chessboard-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1rem auto;
+}
+
+.chessboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+/* Rank labels (left side) */
+.chessboard__rank-labels {
+  display: none; /* hidden on mobile, can enable on desktop */
+}
+
+/* File labels (bottom) */
+.chessboard__file-labels {
+  display: flex;
+  gap: 0;
+  margin-top: 2px;
+}
+
+.chessboard__file-labels span {
+  width: min(11vw, 60px);
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.chessboard__spacer {
+  width: 0;
+}
+
+/* The Grid */
+.chessboard__grid {
+  display: grid;
+  grid-template-columns: repeat(8, min(11vw, 60px));
+  grid-template-rows: repeat(8, min(11vw, 60px));
+  border: 3px solid #334155;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Squares */
+.chessboard__square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.15s;
+}
+
+.chessboard__square--light {
+  background-color: #e8dcc8;
+}
+
+.chessboard__square--dark {
+  background-color: #7b6f5d;
+}
+
+.chessboard__square--selected {
+  background-color: #f6e36b !important;
+}
+
+.chessboard__square--legal {
+  cursor: pointer;
+}
+
+.chessboard__square--last-move {
+  background-color: rgba(246, 227, 107, 0.5) !important;
+}
+
+/* Legal move dot */
+.chessboard__dot {
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Capture ring */
+.chessboard__capture-ring {
+  position: absolute;
+  top: 2px; left: 2px; right: 2px; bottom: 2px;
+  border-radius: 50%;
+  border: 4px solid rgba(0, 0, 0, 0.2);
+}
+
+/* Pieces */
+.chessboard__piece {
+  font-size: min(8vw, 44px);
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+  filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.3));
+}
+
+.chessboard__piece--white {
+  color: #ffffff;
+  text-shadow: 0 0 2px rgba(0,0,0,0.6);
+}
+
+.chessboard__piece--black {
+  color: #1a1a2e;
+  text-shadow: 0 0 2px rgba(255,255,255,0.3);
+}
+
+/* Feedback Overlays */
+.chess-feedback {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.chess-feedback--correct {
+  background: rgba(34, 197, 94, 0.9);
+  color: white;
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.6);
+}
+
+.chess-feedback--wrong {
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.6);
+}
+
+/* ═════════════════════════════════════════════════
+   Chess Map Page
+   ═════════════════════════════════════════════════ */
+
+.chess-map {
+  padding: 2rem 1rem;
+  min-height: 100vh;
+}
+
+.chess-map__header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.chess-map__header h1 {
+  font-size: 2rem;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.chess-map__header p {
+  color: #94a3b8;
+  margin-top: 0.5rem;
+}
+
+.chess-map__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.chess-map__card {
+  background: rgba(30, 41, 59, 0.8);
+  border: 2px solid #334155;
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: center;
+}
+
+.chess-map__card:hover {
+  transform: translateY(-4px);
+  border-color: #fbbf24;
+  box-shadow: 0 8px 24px rgba(251, 191, 36, 0.2);
+}
+
+.chess-map__card--locked {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
+.chess-map__card--completed {
+  border-color: #22c55e;
+}
+
+.chess-map__card-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.chess-map__card-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: white;
+}
+
+.chess-map__card-theme {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.chess-map__card-diff {
+  margin-top: 0.5rem;
+}
+
+.chess-map__back {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.chess-map__back:hover {
+  background: rgba(79, 70, 229, 0.8);
+  transform: translateY(-2px);
+}
+
+/* ═════════════════════════════════════════════════
+   Chess Puzzle Page
+   ═════════════════════════════════════════════════ */
+
+.chess-puzzle-page {
+  padding: 1rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chess-puzzle-page__header {
+  text-align: center;
+  margin-bottom: 1rem;
+  max-width: 500px;
+}
+
+.chess-puzzle-page__title {
+  font-size: 1.5rem;
+  color: #fbbf24;
+  margin-bottom: 0.25rem;
+}
+
+.chess-puzzle-page__desc {
+  color: #cbd5e1;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.chess-puzzle-page__theme {
+  display: inline-block;
+  background: rgba(99, 102, 241, 0.3);
+  color: #a5b4fc;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.chess-puzzle-page__actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.chess-puzzle-page__nav-btn {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.chess-puzzle-page__nav-btn:hover {
+  background: rgba(79, 70, 229, 0.8);
+  transform: translateY(-2px);
+}
+
+/* Difficulty Stars */
+.difficulty-stars {
+  color: #fbbf24;
+  letter-spacing: 2px;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .chess-map__grid {
+    grid-template-columns: 1fr;
+  }
+}

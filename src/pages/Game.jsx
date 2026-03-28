@@ -106,6 +106,34 @@ export default function Game() {
         ))}
       </motion.div>
 
+      {/* Chess Section Link */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        style={{ textAlign: 'center', margin: '2rem 0' }}
+      >
+        <Link to="/chess" style={{ textDecoration: 'none' }}>
+          <motion.div
+            style={{
+              background: 'linear-gradient(135deg, #1e293b, #334155)',
+              border: '2px solid #fbbf24',
+              borderRadius: '16px',
+              padding: '1.5rem 2rem',
+              maxWidth: '400px',
+              margin: '0 auto',
+              cursor: 'pointer'
+            }}
+            whileHover={{ scale: 1.03, borderColor: '#f59e0b' }}
+            whileTap={{ scale: 0.97 }}
+          >
+            <div style={{ fontSize: '2.5rem' }}>♟</div>
+            <h3 style={{ color: '#fbbf24', margin: '0.5rem 0 0.25rem' }}>Chess Grandmaster Trials</h3>
+            <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>20 tactical puzzles — beginner to master!</p>
+          </motion.div>
+        </Link>
+      </motion.div>
+
       <Leaderboard />
     </AnimatedPage>
   );

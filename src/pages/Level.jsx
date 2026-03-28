@@ -280,12 +280,20 @@ export default function Level() {
                       Next Level →
                     </button>
                   ) : (
-                    <button className="btn-glow" onClick={() => {
-                      audioManager.playSFX('click');
-                      navigate('/game');
-                    }}>
-                      Back to Map 🏠
-                    </button>
+                    <>
+                      <button className="btn-glow" onClick={() => {
+                        audioManager.playSFX('click');
+                        navigate('/chess');
+                      }}>
+                        ♟ Chess Puzzles →
+                      </button>
+                      <button className="chess-puzzle-page__nav-btn" style={{ marginTop: '0.5rem' }} onClick={() => {
+                        audioManager.playSFX('click');
+                        navigate('/game');
+                      }}>
+                        Back to Map 🏠
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
