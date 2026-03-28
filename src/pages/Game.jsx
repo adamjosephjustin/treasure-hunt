@@ -129,7 +129,7 @@ export default function Game() {
           >
             <div style={{ fontSize: '2.5rem' }}>♟</div>
             <h3 style={{ color: '#fbbf24', margin: '0.5rem 0 0.25rem' }}>Chess Grandmaster Trials</h3>
-            <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>20 tactical puzzles — beginner to master!</p>
+            <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>50 tactical puzzles — beginner to grandmaster!</p>
           </motion.div>
         </Link>
       </motion.div>
