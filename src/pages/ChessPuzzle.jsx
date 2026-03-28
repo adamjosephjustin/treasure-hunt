@@ -30,11 +30,16 @@ export default function ChessPuzzle() {
   const [solved, setSolved] = useState(false);
   const [attempts, setAttempts] = useState(0);
 
+  // Reset state when puzzle id changes (fixes "Next Puzzle" not working)
+  useEffect(() => {
+    setSolved(false);
+    setAttempts(0);
+  }, [id]);
+
   // Pause background music on chess pages
   useEffect(() => {
     if (audioManager.music) audioManager.music.pause();
     return () => {
-      // Resume music when leaving chess if not muted
       if (!audioManager.muted && audioManager.music) {
         audioManager.music.play().catch(() => {});
       }
@@ -65,9 +70,7 @@ export default function ChessPuzzle() {
 
   return (
     <AnimatedPage className="chess-puzzle-page">
-      <button className="level__back-floating" onClick={() => {
-        navigate('/chess');
-      }}>
+      <button className="level__back-floating" onClick={() => navigate('/chess')}>
         🏠 Map
       </button>
 
@@ -84,8 +87,9 @@ export default function ChessPuzzle() {
         <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>Click a piece, then click the target square.</p>
       </div>
 
+      {/* key={id + attempts} forces full re-mount when puzzle changes OR retry */}
       <ChessBoard
-        key={attempts}
+        key={id + '-' + attempts}
         fen={puzzle.fen}
         solution={puzzle.solution}
         playerColor={playerColor}
@@ -100,15 +104,11 @@ export default function ChessPuzzle() {
           className="chess-puzzle-page__actions"
         >
           {puzzleId < 100 ? (
-            <button className="btn-glow" onClick={() => {
-              navigate(`/chess/${puzzleId + 1}`);
-            }}>
+            <button className="btn-glow" onClick={() => navigate(`/chess/${puzzleId + 1}`)}>
               Next Puzzle →
             </button>
           ) : (
-            <button className="btn-glow" onClick={() => {
-              navigate('/chess');
-            }}>
+            <button className="btn-glow" onClick={() => navigate('/chess')}>
               🏆 All Puzzles Complete!
             </button>
           )}
