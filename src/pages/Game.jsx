@@ -134,6 +134,34 @@ export default function Game() {
         </Link>
       </motion.div>
 
+      {/* Fairy Tale Storybook Link */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.7 }}
+        style={{ textAlign: 'center', margin: '1rem 0 2rem' }}
+      >
+        <Link to="/storybook" style={{ textDecoration: 'none' }}>
+          <motion.div
+            style={{
+              background: 'linear-gradient(135deg, #2d1b4e, #4c1d95)',
+              border: '2px solid #c084fc',
+              borderRadius: '16px',
+              padding: '1.5rem 2rem',
+              maxWidth: '400px',
+              margin: '0 auto',
+              cursor: 'pointer'
+            }}
+            whileHover={{ scale: 1.03, borderColor: '#a855f7' }}
+            whileTap={{ scale: 0.97 }}
+          >
+            <div style={{ fontSize: '2.5rem' }}>📖</div>
+            <h3 style={{ color: '#c084fc', margin: '0.5rem 0 0.25rem' }}>The Enchanted Garden</h3>
+            <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>A fairy tale storybook for little dreamers (ages 2-4)</p>
+          </motion.div>
+        </Link>
+      </motion.div>
+
       <Leaderboard />
     </AnimatedPage>
   );

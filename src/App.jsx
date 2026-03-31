@@ -6,6 +6,7 @@ import Game from './pages/Game';
 import Level from './pages/Level';
 import ChessMap from './pages/ChessMap';
 import ChessPuzzle from './pages/ChessPuzzle';
+import StoryBook from './pages/StoryBook';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/level/:id" element={<Level />} />
           <Route path="/chess" element={<ChessMap />} />
           <Route path="/chess/:id" element={<ChessPuzzle />} />
+          <Route path="/storybook" element={<StoryBook />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
