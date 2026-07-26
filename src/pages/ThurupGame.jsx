@@ -112,7 +112,7 @@ export default function ThurupGamePage() {
   useEffect(() => {
     let newMin = MIN_BID;
     if (phase === PHASE.SECOND_BIDDING) {
-      newMin = 24;
+      newMin = 20;
     }
     if (game?.bid?.amount > 0) {
       newMin = Math.max(newMin, game.bid.amount + 1);
@@ -365,7 +365,7 @@ export default function ThurupGamePage() {
               <div className="thurup-bid-panel__controls">
                 <input
                   type="range"
-                  min={phase === PHASE.SECOND_BIDDING ? Math.max(24, (game.bid.amount || 23) + 1) : Math.max(MIN_BID, (game.bid.amount || MIN_BID - 1) + 1)}
+                  min={phase === PHASE.SECOND_BIDDING ? Math.max(20, (game.bid.amount || 19) + 1) : Math.max(MIN_BID, (game.bid.amount || MIN_BID - 1) + 1)}
                   max={MAX_BID}
                   value={bidAmount}
                   onChange={(e) => setBidAmount(parseInt(e.target.value))}

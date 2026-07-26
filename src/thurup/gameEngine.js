@@ -123,8 +123,8 @@ export function validateBid(currentHighest, amount, isPartnerHighest, isSecondRo
   if (amount < MIN_BID || amount > MAX_BID) {
     return { valid: false, reason: `Bid must be between ${MIN_BID} and ${MAX_BID}.` };
   }
-  if (isSecondRound && amount < 24) {
-    return { valid: false, reason: 'Second round bids must be at least 24.' };
+  if (isSecondRound && amount < 20) {
+    return { valid: false, reason: 'Second round bids must be at least 20.' };
   }
   if (amount <= currentHighest) {
     return { valid: false, reason: `Bid must be higher than current bid of ${currentHighest}.` };
