@@ -196,8 +196,9 @@ export class HostEngine {
   // ─── Bidding ────────────────────────────────────────────
 
   async _handleBid(uid, seat, data) {
-    if (this.state.phase !== PHASE.BIDDING) {
-      return this._rejectAction(seat, 'Not in bidding phase.');
+    const isSecondRound = this.state.phase === PHASE.SECOND_BIDDING;
+    if (this.state.phase !== PHASE.BIDDING && !isSecondRound) {
+      return this._rejectAction(seat, 'Not in a bidding phase.');
     }
     if (this.state.currentPlayer !== seat) {
       return this._rejectAction(seat, 'Not your turn to bid.');
@@ -206,7 +207,8 @@ export class HostEngine {
       return this._rejectAction(seat, 'You already passed.');
     }
 
-    const result = validateBid(this.state.bid.amount, data.amount);
+    const isPartnerHighest = this.state.bid.seat !== -1 && (seat + 2) % NUM_PLAYERS === this.state.bid.seat;
+    const result = validateBid(this.state.bid.amount, data.amount, isPartnerHighest, isSecondRound);
     if (!result.valid) {
       return this._rejectAction(seat, result.reason);
     }
@@ -217,19 +219,24 @@ export class HostEngine {
     // Advance to next non-passed player
     this._advanceBidder();
 
-    // Check if bidding is complete
     const check = checkBiddingResult(this.state.passedBidders, this.state.bid.seat);
     if (check.finished) {
-      this.state.phase = PHASE.SETTING_THURUP;
-      this.state.currentPlayer = this.state.bid.seat;
+      if (!isSecondRound) {
+        this.state.phase = PHASE.SETTING_THURUP;
+        this.state.currentPlayer = this.state.bid.seat;
+      } else {
+        this.state.phase = PHASE.PLAYING;
+        this.state.currentPlayer = getFirstPlayer(this.state.dealer);
+      }
     }
 
     await this._syncState();
   }
 
   async _handlePass(uid, seat) {
-    if (this.state.phase !== PHASE.BIDDING) {
-      return this._rejectAction(seat, 'Not in bidding phase.');
+    const isSecondRound = this.state.phase === PHASE.SECOND_BIDDING;
+    if (this.state.phase !== PHASE.BIDDING && !isSecondRound) {
+      return this._rejectAction(seat, 'Not in a bidding phase.');
     }
     if (this.state.currentPlayer !== seat) {
       return this._rejectAction(seat, 'Not your turn to bid.');
@@ -238,9 +245,9 @@ export class HostEngine {
       return this._rejectAction(seat, 'You already passed.');
     }
 
-    // Can't pass if you're the only one left and no one bid
+    // Can't pass if you're the only one left and no one bid in first round
     const willBePassedCount = this.state.passedBidders.length + 1;
-    if (willBePassedCount >= NUM_PLAYERS && this.state.bid.seat === -1) {
+    if (willBePassedCount >= NUM_PLAYERS && !isSecondRound && this.state.bid.seat === -1) {
       // Everyone passed with no bid — re-deal
       this.state.passedBidders.push(seat);
       this.state.lastAction = { seat, type: 'pass', valid: true, detail: 'All passed — re-dealing' };
@@ -249,12 +256,26 @@ export class HostEngine {
       return;
     }
 
+    if (willBePassedCount >= NUM_PLAYERS && isSecondRound) {
+      // Everyone passed in second round, move to playing
+      this.state.passedBidders.push(seat);
+      this.state.phase = PHASE.PLAYING;
+      this.state.currentPlayer = getFirstPlayer(this.state.dealer);
+      this.state.lastAction = { seat, type: 'pass', valid: true, detail: 'Second bidding complete' };
+      await this._syncState();
+      return;
+    }
+
     // Can't pass if you're the last active player
     if (willBePassedCount >= NUM_PLAYERS - 1 && this.state.bid.seat !== -1) {
-      // This player passes, bid winner is decided
       this.state.passedBidders.push(seat);
-      this.state.phase = PHASE.SETTING_THURUP;
-      this.state.currentPlayer = this.state.bid.seat;
+      if (!isSecondRound) {
+        this.state.phase = PHASE.SETTING_THURUP;
+        this.state.currentPlayer = this.state.bid.seat;
+      } else {
+        this.state.phase = PHASE.PLAYING;
+        this.state.currentPlayer = getFirstPlayer(this.state.dealer);
+      }
       this.state.lastAction = { seat, type: 'pass', valid: true, detail: 'Bidding complete' };
       await this._syncState();
       return;
@@ -323,8 +344,9 @@ export class HostEngine {
       );
     }
 
-    // Transition to playing phase
-    this.state.phase = PHASE.PLAYING;
+    // Transition to second bidding phase
+    this.state.phase = PHASE.SECOND_BIDDING;
+    this.state.passedBidders = []; // Reset passes for second round
     this.state.currentPlayer = getFirstPlayer(this.state.dealer);
     this.state.thurupCard = { suit, hidden: true }; // Show face-down card
     this.state.lastAction = {

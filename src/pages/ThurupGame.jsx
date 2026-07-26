@@ -110,10 +110,20 @@ export default function ThurupGamePage() {
   // ─── Bid constraints ──────────────────────────────────
 
   useEffect(() => {
-    if (game?.bid?.amount) {
-      setBidAmount(Math.max(MIN_BID, game.bid.amount + 1));
+    let newMin = MIN_BID;
+    if (phase === PHASE.SECOND_BIDDING) {
+      newMin = 24;
     }
-  }, [game?.bid?.amount]);
+    if (game?.bid?.amount > 0) {
+      newMin = Math.max(newMin, game.bid.amount + 1);
+    }
+    // Also consider partner rule if raising partner
+    const isPartnerHighest = game?.bid?.seat !== -1 && (mySeat + 2) % 4 === game?.bid?.seat;
+    if (isPartnerHighest && phase !== PHASE.SECOND_BIDDING) {
+      newMin = Math.max(newMin, 20);
+    }
+    setBidAmount(newMin);
+  }, [game?.bid?.amount, phase, mySeat]);
 
   // ─── Card play handler ────────────────────────────────
 
@@ -201,8 +211,9 @@ export default function ThurupGamePage() {
         <div className="thurup-game__header">
           <RunningScore game={game} room={room} />
           <div className="thurup-game__phase-indicator">
-            {phase === PHASE.BIDDING && '📢 Bidding'}
+            {phase === PHASE.BIDDING && '📢 Bidding (1st Round)'}
             {phase === PHASE.SETTING_THURUP && '🔮 Setting Thurup'}
+            {phase === PHASE.SECOND_BIDDING && '📢 Bidding (2nd Round)'}
             {phase === PHASE.PLAYING && `🃏 Trick ${game.trickNumber}/8`}
             {phase === PHASE.TRICK_END && '✨ Trick Complete'}
             {phase === PHASE.ROUND_END && '🏁 Round Over'}
@@ -337,7 +348,7 @@ export default function ThurupGamePage() {
 
         {/* ─── Bidding UI ─────────────────────────── */}
         <AnimatePresence>
-          {phase === PHASE.BIDDING && isMyTurn && (
+          {(phase === PHASE.BIDDING || phase === PHASE.SECOND_BIDDING) && isMyTurn && (
             <motion.div
               className="thurup-bid-panel"
               initial={{ opacity: 0, y: 30 }}
@@ -354,7 +365,7 @@ export default function ThurupGamePage() {
               <div className="thurup-bid-panel__controls">
                 <input
                   type="range"
-                  min={Math.max(MIN_BID, (game.bid.amount || MIN_BID - 1) + 1)}
+                  min={phase === PHASE.SECOND_BIDDING ? Math.max(24, (game.bid.amount || 23) + 1) : Math.max(MIN_BID, (game.bid.amount || MIN_BID - 1) + 1)}
                   max={MAX_BID}
                   value={bidAmount}
                   onChange={(e) => setBidAmount(parseInt(e.target.value))}
@@ -385,7 +396,7 @@ export default function ThurupGamePage() {
         </AnimatePresence>
 
         {/* Bidding status for non-active player */}
-        {phase === PHASE.BIDDING && !isMyTurn && (
+        {(phase === PHASE.BIDDING || phase === PHASE.SECOND_BIDDING) && !isMyTurn && (
           <div className="thurup-bid-panel thurup-bid-panel--waiting">
             <p>
               {game.bid.amount > 0
@@ -411,22 +422,22 @@ export default function ThurupGamePage() {
               <p className="thurup-select-panel__desc">
                 Select the trump suit based on your strongest cards
               </p>
-              <div className="thurup-select-panel__suits">
-                {SUITS.map((suit) => (
-                  <motion.button
-                    key={suit}
-                    className={`thurup-select-panel__suit-btn ${
-                      selectedThurup === suit ? 'thurup-select-panel__suit-btn--selected' : ''
-                    } thurup-select-panel__suit-btn--${suit}`}
-                    onClick={() => setSelectedThurup(suit)}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
+              <div className="thurup-select-panel__suits" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                {hand.map((card) => (
+                  <motion.div
+                    key={card.id}
+                    onClick={() => setSelectedThurup(card.suit)}
+                    whileHover={{ scale: 1.1, y: -10 }}
+                    whileTap={{ scale: 0.95 }}
+                    style={{ 
+                      cursor: 'pointer', 
+                      filter: selectedThurup && selectedThurup !== card.suit ? 'brightness(0.5)' : 'none',
+                      transition: 'filter 0.2s',
+                      margin: '0 4px'
+                    }}
                   >
-                    <span className="thurup-select-panel__suit-symbol">
-                      {SUIT_SYMBOLS[suit]}
-                    </span>
-                    <span className="thurup-select-panel__suit-name">{suit}</span>
-                  </motion.button>
+                    <ThurupCard card={card} />
+                  </motion.div>
                 ))}
               </div>
               <motion.button

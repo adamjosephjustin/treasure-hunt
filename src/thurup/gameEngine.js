@@ -39,6 +39,7 @@ export const PHASE = {
   WAITING: 'waiting',
   BIDDING: 'bidding',
   SETTING_THURUP: 'settingThurup',
+  SECOND_BIDDING: 'secondBidding',
   PLAYING: 'playing',
   TRICK_END: 'trickEnd',
   ROUND_END: 'roundEnd',
@@ -118,12 +119,18 @@ export function getFirstPlayer(dealerSeat) {
  * Validate a bid attempt.
  * @returns {{ valid: boolean, reason?: string }}
  */
-export function validateBid(currentHighest, amount) {
+export function validateBid(currentHighest, amount, isPartnerHighest, isSecondRound = false) {
   if (amount < MIN_BID || amount > MAX_BID) {
     return { valid: false, reason: `Bid must be between ${MIN_BID} and ${MAX_BID}.` };
   }
+  if (isSecondRound && amount < 24) {
+    return { valid: false, reason: 'Second round bids must be at least 24.' };
+  }
   if (amount <= currentHighest) {
     return { valid: false, reason: `Bid must be higher than current bid of ${currentHighest}.` };
+  }
+  if (!isSecondRound && isPartnerHighest && amount < 20) {
+    return { valid: false, reason: 'To raise your partner directly, you must bid at least 20 (Honour).' };
   }
   return { valid: true };
 }
@@ -269,14 +276,22 @@ export function checkRoundResult(teamAPoints, teamBPoints, bidAmount, bidderSeat
   const bidderPoints = bidderTeam === 'A' ? teamAPoints : teamBPoints;
   const bidMet = bidderPoints >= bidAmount;
 
-  // Double game points for bids of 20+
-  const basePoints = bidAmount >= 20 ? 2 : 1;
+  // Kerala 28 Game Points Scaling
+  let winPoints = 1;
+  let losePoints = 2;
+  if (bidAmount >= 28) { // Thani
+    winPoints = 3;
+    losePoints = 4;
+  } else if (bidAmount >= 20) { // Honour
+    winPoints = 2;
+    losePoints = 3;
+  }
 
   if (bidMet) {
-    return { bidMet: true, winningTeam: bidderTeam, gamePoints: basePoints };
+    return { bidMet: true, winningTeam: bidderTeam, gamePoints: winPoints };
   } else {
     const opposingTeam = bidderTeam === 'A' ? 'B' : 'A';
-    return { bidMet: false, winningTeam: opposingTeam, gamePoints: basePoints };
+    return { bidMet: false, winningTeam: opposingTeam, gamePoints: losePoints };
   }
 }
 

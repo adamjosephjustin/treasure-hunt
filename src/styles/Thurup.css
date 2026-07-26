@@ -1105,4 +1105,15 @@
   .player-seat__cards { display: none; }
 
   .thurup-game__header { font-size: 0.75rem; }
+
+  .thurup-select-panel {
+    min-width: unset;
+    width: 95%;
+    padding: 1rem;
+  }
+  .thurup-select-panel__title { font-size: 1.1rem; }
+  .thurup-select-panel__desc { font-size: 0.75rem; }
+  .thurup-select-panel__suits {
+    gap: 0.2rem !important;
+  }
 }
