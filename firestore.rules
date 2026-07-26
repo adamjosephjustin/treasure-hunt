@@ -16,8 +16,10 @@ service cloud.firestore {
       allow read: if request.auth != null;
       // Any authenticated user can create a room
       allow create: if request.auth != null;
-      // Only the host can update/delete the room
-      allow update, delete: if request.auth != null
+      // Any authenticated user can update the room (needed to join/leave/ready)
+      allow update: if request.auth != null;
+      // Only the host can delete the room
+      allow delete: if request.auth != null
         && request.auth.uid == resource.data.host;
 
       // Chat — anyone authenticated can read; only sender can write

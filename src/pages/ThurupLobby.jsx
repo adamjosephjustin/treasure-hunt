@@ -6,9 +6,8 @@
  */
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import AnimatedPage from '../components/AnimatedPage';
 import { useThurupRoom } from '../thurup/useThurupRoom';
 import { ensureAuth } from '../utils/firebase';
@@ -21,11 +20,15 @@ export default function ThurupLobby() {
   const navigate = useNavigate();
   const { createRoom, joinRoom } = useThurupRoom(null);
 
-  const [mode, setMode] = useState(null); // 'create' | 'join'
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const initialCode = searchParams.get('code') || '';
+
+  const [mode, setMode] = useState(initialCode ? 'join' : null); // 'create' | 'join'
   const [displayName, setDisplayName] = useState(
     () => localStorage.getItem('thurup_name') || ''
   );
-  const [joinCode, setJoinCode] = useState('');
+  const [joinCode, setJoinCode] = useState(initialCode);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 

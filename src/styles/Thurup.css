@@ -1076,6 +1076,25 @@
 }
 
 @media (max-width: 480px) {
+  .thurup-room__table {
+    width: 240px;
+    height: 240px;
+  }
+  .thurup-room__table-felt {
+    inset: 30px;
+  }
+  .thurup-room__seat {
+    min-width: 80px;
+    padding: 0.3rem;
+  }
+  .thurup-room__seat-icon { font-size: 1rem; }
+  .thurup-room__seat-name { font-size: 0.7rem; }
+  .thurup-room__seat--left { left: -20px; }
+  .thurup-room__seat--right { right: -20px; }
+  
+  .thurup-btn--large { padding: 0.8rem 1.5rem; font-size: 1rem; }
+  .thurup-room__code { font-size: 1.4rem; padding: 0.5rem 1rem; letter-spacing: 0.2rem; }
+
   .thurup-table {
     grid-template-columns: 70px 1fr 70px;
     grid-template-rows: 80px 1fr 50px;

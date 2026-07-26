@@ -23,7 +23,7 @@ const SEAT_ICONS = ['🟢', '🔵', '🟡', '🔴'];
 export default function ThurupRoom() {
   const { roomId } = useParams();
   const navigate = useNavigate();
-  const { room, loading, error, toggleReady, leaveRoom, startGame } = useThurupRoom(roomId);
+  const { room, loading, error, leaveRoom, startGame } = useThurupRoom(roomId);
   const { messages, sendMessage, unreadCount, markVisible } = useChat(roomId);
   const { isInVoice, isMuted, speakingPeers, voiceError, joinVoice, leaveVoice, toggleMute } =
     useVoiceChat(roomId, room?.players);
@@ -49,6 +49,16 @@ export default function ThurupRoom() {
       await navigator.clipboard.writeText(room.code);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const [linkCopied, setLinkCopied] = useState(false);
+  const handleCopyLink = async () => {
+    if (room?.code) {
+      const link = `${window.location.origin}/#/thurup?code=${room.code}`;
+      await navigator.clipboard.writeText(link);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
     }
   };
 
@@ -111,16 +121,27 @@ export default function ThurupRoom() {
           animate={{ opacity: 1, y: 0 }}
         >
           <h2 className="thurup-room__title">🃏 Game Room</h2>
-          <div className="thurup-room__code-section">
-            <span className="thurup-room__code-label">Invite Code:</span>
+          <div className="thurup-room__code-section" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <span className="thurup-room__code-label" style={{ alignSelf: 'center' }}>Invite Code:</span>
             <motion.button
               className="thurup-room__code"
               onClick={handleCopy}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              title="Copy code only"
             >
               {room.code}
               <span className="thurup-room__copy-icon">{copied ? '✓' : '📋'}</span>
+            </motion.button>
+            <motion.button
+              className="thurup-btn thurup-btn--secondary"
+              onClick={handleCopyLink}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+              title="Copy full invite link"
+            >
+              🔗 {linkCopied ? 'Link Copied!' : 'Copy Link'}
             </motion.button>
           </div>
         </motion.div>
@@ -143,7 +164,7 @@ export default function ThurupRoom() {
                   key={seatIdx}
                   className={`thurup-room__seat thurup-room__seat--${posClass} ${
                     player ? 'thurup-room__seat--occupied' : ''
-                  } ${player?.isReady ? 'thurup-room__seat--ready' : ''} ${
+                  } ${
                     isSpeaking ? 'thurup-room__seat--speaking' : ''
                   }`}
                   initial={{ scale: 0, opacity: 0 }}
@@ -164,15 +185,6 @@ export default function ThurupRoom() {
                       'Waiting...'
                     )}
                   </div>
-                  {player && (
-                    <div
-                      className={`thurup-room__seat-status ${
-                        player.isReady ? 'thurup-room__seat-status--ready' : ''
-                      }`}
-                    >
-                      {player.isReady ? '✅ Ready' : '⏳ Not Ready'}
-                    </div>
-                  )}
                   {/* Team indicator */}
                   <div className="thurup-room__seat-team">
                     Team {seatIdx % 2 === 0 ? 'A' : 'B'}
@@ -195,22 +207,11 @@ export default function ThurupRoom() {
 
         {/* Actions */}
         <div className="thurup-room__actions">
-          <motion.button
-            className={`thurup-btn ${
-              myPlayer?.isReady ? 'thurup-btn--secondary' : 'thurup-btn--primary'
-            }`}
-            onClick={toggleReady}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {myPlayer?.isReady ? '❌ Unready' : '✅ Ready'}
-          </motion.button>
-
           {isHost && (
             <motion.button
               className="thurup-btn thurup-btn--accent"
               onClick={handleStart}
-              disabled={room.players.length < 4 || !room.players.every((p) => p.isReady)}
+              disabled={room.players.length < 4}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
