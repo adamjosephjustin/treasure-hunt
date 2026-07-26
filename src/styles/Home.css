@@ -63,6 +63,13 @@
   font-weight: 400;
 }
 
+.home__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
 .home__start-btn {
   display: inline-flex;
   align-items: center;
@@ -85,3 +92,15 @@
 .home__start-btn:active {
   transform: translateY(0) scale(0.98);
 }
+
+.home__thurup-btn {
+  background: linear-gradient(135deg, #0d5c2e, #0a3d1f);
+  box-shadow: 0 6px 24px rgba(13, 92, 46, 0.4);
+  font-size: 1.15rem;
+  padding: 0.9rem 2.5rem;
+}
+
+.home__thurup-btn:hover {
+  box-shadow: 0 10px 32px rgba(13, 92, 46, 0.6);
+}
+

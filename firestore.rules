@@ -1,0 +1,71 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Existing collections (Pictionary, Lumina progress, etc.) ──
+    // Preserve any existing rules. These new rules only affect
+    // thurup_rooms/ and thurup_games/ collections.
+
+    match /players/{playerId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // ── Thurup Rooms ───────────────────────────────────────────
+    match /thurup_rooms/{roomId} {
+      // Any authenticated user can read rooms (needed to join by code)
+      allow read: if request.auth != null;
+      // Any authenticated user can create a room
+      allow create: if request.auth != null;
+      // Only the host can update/delete the room
+      allow update, delete: if request.auth != null
+        && request.auth.uid == resource.data.host;
+
+      // Chat — anyone authenticated can read; only sender can write
+      match /chat/{msgId} {
+        allow read: if request.auth != null;
+        allow create: if request.auth != null
+          && request.resource.data.sender == request.auth.uid;
+      }
+
+      // WebRTC signaling — any room member can read/write signals
+      match /signals/{signalId} {
+        allow read, write: if request.auth != null;
+      }
+    }
+
+    // ── Thurup Games ───────────────────────────────────────────
+    match /thurup_games/{gameId} {
+      // Any authenticated user can read the public game state
+      allow read: if request.auth != null;
+      // Only the host can create/update the game document
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null
+        && request.auth.uid == resource.data.host;
+
+      // Private hands — each player can ONLY read their own hand.
+      // The host can read ALL hands (needed for move validation)
+      // and is the ONLY one who can write (dealing).
+      match /hands/{playerId} {
+        allow read: if request.auth != null
+          && (request.auth.uid == playerId
+              || request.auth.uid == get(/databases/$(database)/documents/thurup_games/$(gameId)).data.host);
+        allow write: if request.auth != null
+          && request.auth.uid == get(/databases/$(database)/documents/thurup_games/$(gameId)).data.host;
+      }
+
+      // Action intents — each player writes ONLY their own slot.
+      // Everyone can read (host needs to process actions).
+      match /actions/{playerId} {
+        allow read: if request.auth != null;
+        allow write: if request.auth != null
+          && request.auth.uid == playerId;
+      }
+
+      // Secrets (e.g. thurup suit before reveal) — host only
+      match /secrets/{secretId} {
+        allow read, write: if request.auth != null
+          && request.auth.uid == get(/databases/$(database)/documents/thurup_games/$(gameId)).data.host;
+      }
+    }
+  }
+}

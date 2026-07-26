@@ -1,0 +1,228 @@
+/* ═══════════════════════════════════════════════════════════
+   ThurupCards.css — Playing card styles
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── Card base ─────────────────────────────────────────── */
+
+.thurup-card {
+  position: relative;
+  width: 72px;
+  height: 100px;
+  border-radius: 10px;
+  background: #faf8f0;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.2);
+  user-select: none;
+  flex-shrink: 0;
+  transform-style: preserve-3d;
+  transition: filter 0.2s, box-shadow 0.2s;
+}
+
+.thurup-card--small {
+  width: 52px;
+  height: 72px;
+}
+
+/* ─── Face-up colors ────────────────────────────────────── */
+
+.thurup-card--red .thurup-card__rank,
+.thurup-card--red .thurup-card__suit-small,
+.thurup-card--red .thurup-card__suit-large {
+  color: #c41e3a;
+}
+
+.thurup-card--black .thurup-card__rank,
+.thurup-card--black .thurup-card__suit-small,
+.thurup-card--black .thurup-card__suit-large {
+  color: #1a1a2e;
+}
+
+/* ─── Corner rank + suit ────────────────────────────────── */
+
+.thurup-card__corner {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.thurup-card__corner--top {
+  top: 5px;
+  left: 6px;
+}
+
+.thurup-card__corner--bottom {
+  bottom: 5px;
+  right: 6px;
+  transform: rotate(180deg);
+}
+
+.thurup-card__rank {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.thurup-card__suit-small {
+  font-size: 0.7rem;
+  margin-top: -2px;
+}
+
+.thurup-card--small .thurup-card__rank { font-size: 0.75rem; }
+.thurup-card--small .thurup-card__suit-small { font-size: 0.55rem; }
+
+/* ─── Center suit ───────────────────────────────────────── */
+
+.thurup-card__center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.thurup-card__suit-large {
+  font-size: 2rem;
+}
+
+.thurup-card--small .thurup-card__suit-large { font-size: 1.4rem; }
+
+/* ─── Points badge ──────────────────────────────────────── */
+
+.thurup-card__points {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: white;
+  background: rgba(212, 168, 71, 0.9);
+  padding: 1px 4px;
+  border-radius: 4px;
+  line-height: 1.2;
+}
+
+.thurup-card--small .thurup-card__points {
+  font-size: 0.4rem;
+  padding: 0px 3px;
+}
+
+/* ─── Thurup label ──────────────────────────────────────── */
+
+.thurup-card__thurup-label { font-size: 2.5rem; }
+.thurup-card__thurup-text {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #d4a847;
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+  margin-top: 0.15rem;
+}
+
+.thurup-card--thurup-revealed {
+  border: 2px solid #d4a847;
+  box-shadow:
+    0 0 16px rgba(212, 168, 71, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ─── Card back ─────────────────────────────────────────── */
+
+.thurup-card--back {
+  background: linear-gradient(145deg, #1a1a3e, #2d2d5e);
+  border: 2px solid rgba(212, 168, 71, 0.25);
+}
+
+.thurup-card__back-pattern {
+  position: absolute;
+  inset: 4px;
+  border-radius: 6px;
+  border: 1px solid rgba(212, 168, 71, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 6px,
+      rgba(212, 168, 71, 0.06) 6px,
+      rgba(212, 168, 71, 0.06) 7px
+    );
+}
+
+.thurup-card__back-diamond {
+  font-size: 1.5rem;
+  color: rgba(212, 168, 71, 0.25);
+}
+
+.thurup-card__back-label {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: rgba(212, 168, 71, 0.3);
+}
+
+.thurup-card--thurup-hidden {
+  border: 2px solid rgba(212, 168, 71, 0.5);
+  box-shadow: 0 0 12px rgba(212, 168, 71, 0.2);
+}
+
+/* ─── Interactive states ────────────────────────────────── */
+
+.thurup-card--clickable {
+  cursor: pointer;
+}
+
+.thurup-card--clickable:hover {
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    0 0 12px rgba(212, 168, 71, 0.2);
+}
+
+.thurup-card--disabled {
+  filter: brightness(0.5) saturate(0.3);
+  cursor: not-allowed;
+}
+
+.thurup-card--selected {
+  box-shadow:
+    0 0 0 3px #d4a847,
+    0 4px 16px rgba(212, 168, 71, 0.5);
+}
+
+.thurup-card--played {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Small screen adjustments ──────────────────────────── */
+
+@media (max-width: 768px) {
+  .thurup-card {
+    width: 58px;
+    height: 82px;
+  }
+  .thurup-card--small {
+    width: 42px;
+    height: 60px;
+  }
+  .thurup-card__rank { font-size: 0.85rem; }
+  .thurup-card__suit-small { font-size: 0.6rem; }
+  .thurup-card__suit-large { font-size: 1.5rem; }
+}
+
+@media (max-width: 480px) {
+  .thurup-card {
+    width: 48px;
+    height: 68px;
+  }
+  .thurup-card--small {
+    width: 36px;
+    height: 50px;
+  }
+  .thurup-card__rank { font-size: 0.7rem; }
+  .thurup-card__suit-large { font-size: 1.2rem; }
+  .thurup-card__points { display: none; }
+}

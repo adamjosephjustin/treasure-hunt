@@ -54,6 +54,7 @@ export default function Home() {
            initial={{ y: 20, opacity: 0 }}
            animate={{ y: 0, opacity: 1 }}
            transition={{ delay: 0.4 }}
+           className="home__buttons"
         >
           <Link to="/game" className="home__start-btn" id="start-btn">
             <motion.span
@@ -62,6 +63,15 @@ export default function Home() {
               style={{ display: 'inline-block' }}
             >
               🌟 Start Adventure
+            </motion.span>
+          </Link>
+          <Link to="/thurup" className="home__start-btn home__thurup-btn" id="thurup-btn">
+            <motion.span
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              style={{ display: 'inline-block' }}
+            >
+              🃏 Play Thurup (28)
             </motion.span>
           </Link>
         </motion.div>

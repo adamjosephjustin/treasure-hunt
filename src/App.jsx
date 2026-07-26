@@ -7,6 +7,9 @@ import Level from './pages/Level';
 import ChessMap from './pages/ChessMap';
 import ChessPuzzle from './pages/ChessPuzzle';
 import StoryBook from './pages/StoryBook';
+import ThurupLobby from './pages/ThurupLobby';
+import ThurupRoom from './pages/ThurupRoom';
+import ThurupGamePage from './pages/ThurupGame';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -22,6 +25,10 @@ export default function App() {
           <Route path="/storybook" element={<StoryBook />} />
           <Route path="*" element={<NotFound />} />
         </Route>
+        {/* Thurup routes outside the main Layout (has its own UI) */}
+        <Route path="/thurup" element={<ThurupLobby />} />
+        <Route path="/thurup/room/:roomId" element={<ThurupRoom />} />
+        <Route path="/thurup/game/:gameId" element={<ThurupGamePage />} />
       </Routes>
     </ProgressProvider>
   );
