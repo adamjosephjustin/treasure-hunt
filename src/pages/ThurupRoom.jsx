@@ -15,6 +15,7 @@ import { useVoiceChat } from '../thurup/useVoiceChat';
 import ChatPanel from '../thurup/ChatPanel';
 import VoiceChatControls from '../thurup/VoiceChatControls';
 import { getUid } from '../utils/firebase';
+import { audioManager } from '../utils/audio';
 import '../styles/Thurup.css';
 
 const SEAT_LABELS = ['South (You)', 'East', 'North', 'West'];
@@ -34,6 +35,11 @@ export default function ThurupRoom() {
   const uid = getUid();
   const isHost = room?.host === uid;
   const myPlayer = room?.players?.find((p) => p.uid === uid);
+
+  // Pause background music
+  useEffect(() => {
+    if (audioManager.music) audioManager.music.pause();
+  }, []);
 
   // Navigate to game when game starts
   useEffect(() => {

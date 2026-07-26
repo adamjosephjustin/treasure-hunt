@@ -35,6 +35,11 @@ export default function ThurupGamePage() {
   const locationPlayers = location.state?.players;
   const isHost = location.state?.isHost;
 
+  // Pause background music
+  useEffect(() => {
+    if (audioManager.music) audioManager.music.pause();
+  }, []);
+
   const { game, hand, loading, mySeat, isMyTurn, phase, validMoveIds, canRequestReveal, submitBid, passBid, setThurup, playCard, requestReveal } = useThurupGame(gameId);
   const { room } = useThurupRoom(roomId);
   const { messages, sendMessage, unreadCount, markVisible } = useChat(roomId);

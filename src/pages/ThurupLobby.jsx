@@ -5,12 +5,13 @@
  * and a premium-looking hero section.
  */
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import AnimatedPage from '../components/AnimatedPage';
 import { useThurupRoom } from '../thurup/useThurupRoom';
 import { ensureAuth } from '../utils/firebase';
+import { audioManager } from '../utils/audio';
 import '../styles/Thurup.css';
 
 const RANK_DISPLAY = ['J', '9', 'A', '10', 'K', 'Q', '8', '7'];
@@ -23,6 +24,11 @@ export default function ThurupLobby() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const initialCode = searchParams.get('code') || '';
+
+  // Pause background music in Thurup game
+  React.useEffect(() => {
+    if (audioManager.music) audioManager.music.pause();
+  }, []);
 
   const [mode, setMode] = useState(initialCode ? 'join' : null); // 'create' | 'join'
   const [displayName, setDisplayName] = useState(

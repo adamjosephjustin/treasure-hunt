@@ -165,8 +165,8 @@ export function useThurupRoom(roomId) {
     const uid = getUid();
     if (room.host !== uid) throw new Error('Only the host can start the game.');
 
-    const allReady = room.players.length === 4 && room.players.every((p) => p.isReady);
-    if (!allReady) throw new Error('All 4 players must be ready.');
+    const isFull = room.players.length === 4;
+    if (!isFull) throw new Error('All 4 players must join before starting.');
 
     const gameId = `game_${Date.now()}`;
     await updateDoc(doc(db, 'thurup_rooms', room.id), {
