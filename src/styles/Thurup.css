@@ -17,6 +17,29 @@
   --thurup-danger: #e53e3e;
   --thurup-success: #38a169;
   --thurup-info: #4299e1;
+
+  /* Overlap between fanned hand cards — shrinks at smaller breakpoints
+     below so each card keeps a reasonable tap target. */
+  --thurup-hand-overlap: -20px;
+}
+
+/* iOS/Android pull-to-refresh is a real hazard here: a stray downward
+   swipe reloading the tab used to silently freeze the game (see the
+   roomId/isHost fix). This doesn't replace that fix, but it stops the
+   accidental trigger in the first place. */
+.thurup-lobby,
+.thurup-game-page {
+  overscroll-behavior-y: contain;
+}
+
+/* Cards, buttons, and other tap targets shouldn't register a
+   double-tap-zoom on mobile browsers. */
+.thurup-btn,
+.thurup-card--clickable,
+.thurup-room__code,
+.chat-panel__toggle,
+.voice-controls__btn {
+  touch-action: manipulation;
 }
 
 /* ─── Shared elements ───────────────────────────────────── */
@@ -122,6 +145,7 @@
   justify-content: center;
   gap: 1rem;
   min-height: 60vh;
+  min-height: 60dvh;
   font-size: 1.1rem;
   color: var(--thurup-warm-white);
 }
@@ -134,6 +158,7 @@
   justify-content: center;
   gap: 1rem;
   min-height: 60vh;
+  min-height: 60dvh;
   text-align: center;
 }
 
@@ -145,6 +170,7 @@
   align-items: center;
   justify-content: flex-start;
   min-height: 100vh;
+  min-height: 100dvh; /* accounts for mobile browser chrome (address bar) */
   padding: 2rem;
   background: radial-gradient(ellipse at 50% 30%, var(--thurup-felt-dark) 0%, #05200f 70%);
   position: relative;
@@ -346,6 +372,8 @@
 
 .thurup-room__seat--ready { border-color: var(--thurup-success); box-shadow: 0 0 12px rgba(56, 161, 105, 0.3); }
 .thurup-room__seat--speaking { box-shadow: 0 0 16px rgba(66, 153, 225, 0.5); }
+.thurup-room__seat--stale { border-color: var(--thurup-danger); opacity: 0.6; }
+.thurup-room__seat--stale .thurup-room__seat-team { color: var(--thurup-danger); font-style: italic; }
 
 .thurup-room__seat-icon { font-size: 1.2rem; }
 .thurup-room__seat-name { font-size: 0.8rem; font-weight: 600; color: var(--thurup-warm-white); text-align: center; }
@@ -379,6 +407,7 @@
 
 .thurup-game-page {
   min-height: 100vh;
+  min-height: 100dvh;
   background: radial-gradient(ellipse at 50% 40%, var(--thurup-felt-dark) 0%, #031a08 80%);
   padding: 0;
 }
@@ -387,6 +416,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
 }
 
@@ -538,7 +568,13 @@
 
 .player-seat--speaking { border-color: var(--thurup-info); }
 
+.player-seat--stale {
+  border-color: var(--thurup-danger);
+  opacity: 0.6;
+}
+
 .player-seat__avatar {
+  position: relative;
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -549,6 +585,22 @@
   justify-content: center;
   font-weight: 700;
   font-size: 1rem;
+}
+
+.player-seat__stale-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--thurup-danger);
+  border: 2px solid var(--thurup-felt-dark);
+}
+
+.player-seat__stale-label {
+  color: var(--thurup-danger);
+  font-style: italic;
 }
 
 .player-seat__name {
@@ -612,7 +664,7 @@
 
 .thurup-bid-panel {
   position: fixed;
-  bottom: 160px;
+  bottom: calc(160px + env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
   background: var(--thurup-panel);
@@ -803,7 +855,7 @@
 
 .thurup-toast {
   position: fixed;
-  bottom: 180px;
+  bottom: calc(180px + env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
   padding: 0.7rem 1.5rem;
@@ -855,7 +907,7 @@
 /* ─── Footer ────────────────────────────────────────────── */
 
 .thurup-game__footer {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1rem calc(0.5rem + env(safe-area-inset-bottom));
   display: flex;
   justify-content: center;
   background: var(--thurup-panel);
@@ -866,8 +918,8 @@
 
 .chat-panel-wrapper {
   position: fixed;
-  bottom: 1rem;
-  right: 1rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+  right: calc(1rem + env(safe-area-inset-right));
   z-index: 45;
 }
 
@@ -1059,6 +1111,8 @@
 /* ─── Responsive ────────────────────────────────────────── */
 
 @media (max-width: 768px) {
+  :root { --thurup-hand-overlap: -18px; }
+
   .thurup-table {
     grid-template-columns: 100px 1fr 100px;
     grid-template-rows: 100px 1fr 60px;
@@ -1076,6 +1130,8 @@
 }
 
 @media (max-width: 480px) {
+  :root { --thurup-hand-overlap: -14px; }
+
   .thurup-room__table {
     width: 240px;
     height: 240px;
@@ -1091,7 +1147,7 @@
   .thurup-room__seat-name { font-size: 0.7rem; }
   .thurup-room__seat--left { left: -20px; }
   .thurup-room__seat--right { right: -20px; }
-  
+
   .thurup-btn--large { padding: 0.8rem 1.5rem; font-size: 1rem; }
   .thurup-room__code { font-size: 1.4rem; padding: 0.5rem 1rem; letter-spacing: 0.2rem; }
 
@@ -1106,6 +1162,7 @@
 
   .thurup-game__header { font-size: 0.75rem; }
 
+  .thurup-bid-panel,
   .thurup-select-panel {
     min-width: unset;
     width: 95%;
@@ -1116,4 +1173,51 @@
   .thurup-select-panel__suits {
     gap: 0.2rem !important;
   }
+}
+
+/* Extra-small phones (e.g. iPhone SE, older/compact Android) — the
+   circular room table and card fan need one more size step down so
+   nothing overflows a ~320-360px viewport. */
+@media (max-width: 360px) {
+  :root { --thurup-hand-overlap: -10px; }
+
+  .thurup-room__table { width: 210px; height: 210px; }
+  .thurup-room__table-felt { inset: 24px; }
+  .thurup-room__seat { min-width: 70px; }
+  .thurup-room__seat--left { left: -14px; }
+  .thurup-room__seat--right { right: -14px; }
+
+  .thurup-lobby { padding: 1.25rem; }
+  .thurup-lobby__title { font-size: 2.1rem; }
+}
+
+/* Short-viewport / landscape phones. A 4-seat card table actually suits
+   landscape well, but a phone rotated sideways can be as short as
+   ~360-400px tall — well under the portrait-oriented row heights above
+   (which are keyed off *width*, not height) — so the table, hand, and
+   fixed bid/toast panels need to compact vertically here regardless of
+   how wide the screen is. */
+@media (max-height: 480px) and (orientation: landscape) {
+  .thurup-game__header { padding: 0.25rem 0.75rem; }
+
+  .thurup-table {
+    grid-template-columns: 90px 1fr 90px;
+    grid-template-rows: 60px 1fr 40px;
+    padding: 0.25rem;
+  }
+  .thurup-table__center { min-height: 110px; }
+
+  .thurup-hand { padding: 0.25rem 0.5rem 0.5rem; }
+  .thurup-hand__cards { padding: 0.25rem; }
+  /* .thurup-card sizing for this breakpoint lives in ThurupCards.css,
+     which is imported after this file and would otherwise win the
+     cascade on equal specificity. */
+
+  .player-seat { padding: 0.3rem; }
+  .player-seat__avatar { width: 26px; height: 26px; font-size: 0.75rem; }
+  .player-seat__cards { display: none; }
+
+  .thurup-bid-panel { bottom: calc(90px + env(safe-area-inset-bottom)); padding: 0.75rem 1.25rem; }
+  .thurup-toast { bottom: calc(100px + env(safe-area-inset-bottom)); }
+  .thurup-select-panel { padding: 1rem; max-height: 90vh; overflow-y: auto; }
 }

@@ -12,6 +12,7 @@ import AnimatedPage from '../components/AnimatedPage';
 import { useThurupRoom } from '../thurup/useThurupRoom';
 import { useChat } from '../thurup/useChat';
 import { useVoiceChat } from '../thurup/useVoiceChat';
+import { usePresence } from '../thurup/usePresence';
 import ChatPanel from '../thurup/ChatPanel';
 import VoiceChatControls from '../thurup/VoiceChatControls';
 import { getUid } from '../utils/firebase';
@@ -28,6 +29,7 @@ export default function ThurupRoom() {
   const { messages, sendMessage, unreadCount, markVisible } = useChat(roomId);
   const { isInVoice, isMuted, speakingPeers, voiceError, joinVoice, leaveVoice, toggleMute } =
     useVoiceChat(roomId, room?.players);
+  const { stalePeers } = usePresence(roomId);
 
   const [copied, setCopied] = useState(false);
   const [startError, setStartError] = useState('');
@@ -164,6 +166,7 @@ export default function ThurupRoom() {
               const posClass = ['bottom', 'right', 'top', 'left'][position];
               const isMe = player?.uid === uid;
               const isSpeaking = speakingPeers?.has(player?.uid);
+              const isStale = player && !isMe && stalePeers?.has(player.uid);
 
               return (
                 <motion.div
@@ -172,6 +175,8 @@ export default function ThurupRoom() {
                     player ? 'thurup-room__seat--occupied' : ''
                   } ${
                     isSpeaking ? 'thurup-room__seat--speaking' : ''
+                  } ${
+                    isStale ? 'thurup-room__seat--stale' : ''
                   }`}
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -193,7 +198,7 @@ export default function ThurupRoom() {
                   </div>
                   {/* Team indicator */}
                   <div className="thurup-room__seat-team">
-                    Team {seatIdx % 2 === 0 ? 'A' : 'B'}
+                    {isStale ? 'reconnecting…' : `Team ${seatIdx % 2 === 0 ? 'A' : 'B'}`}
                   </div>
                 </motion.div>
               );

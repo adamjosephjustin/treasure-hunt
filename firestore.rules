@@ -33,6 +33,13 @@ service cloud.firestore {
       match /signals/{signalId} {
         allow read, write: if request.auth != null;
       }
+
+      // Presence heartbeats — anyone can read (to detect stale peers),
+      // each player writes only their own heartbeat doc.
+      match /presence/{uid} {
+        allow read: if request.auth != null;
+        allow write: if request.auth != null && request.auth.uid == uid;
+      }
     }
 
     // ── Thurup Games ───────────────────────────────────────────

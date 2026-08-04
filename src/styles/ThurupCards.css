@@ -226,3 +226,17 @@
   .thurup-card__suit-large { font-size: 1.2rem; }
   .thurup-card__points { display: none; }
 }
+
+/* Short-viewport / landscape phones — see the matching table/hand rules
+   in Thurup.css. Kept here (last in source order) so it reliably wins
+   the cascade over the max-width rule above on phones that match both. */
+@media (max-height: 480px) and (orientation: landscape) {
+  .thurup-card {
+    width: 44px;
+    height: 62px;
+  }
+  .thurup-card--small {
+    width: 32px;
+    height: 46px;
+  }
+}

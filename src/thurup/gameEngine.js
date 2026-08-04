@@ -162,16 +162,29 @@ export function checkBiddingResult(passedSeats, highestBidSeat, numPlayers = NUM
  * @param {string|null} opts.leadSuit    Suit of the first card in the trick
  * @param {string|null} opts.thurupSuit  The trump suit
  * @param {boolean}  opts.thurupRevealed Whether the trump has been revealed
+ * @param {boolean}  [opts.isBidder]    Whether the player is the bid winner
+ *                                       (who alone knows the hidden trump)
  * @returns {{ valid: boolean, reason?: string }}
  */
-export function validatePlay({ hand, card, currentTrick, leadSuit, thurupSuit, thurupRevealed }) {
+export function validatePlay({ hand, card, currentTrick, leadSuit, thurupSuit, thurupRevealed, isBidder = false }) {
   // Does the player actually hold this card?
   if (!hand.some((c) => c.id === card.id)) {
     return { valid: false, reason: "You don't have this card." };
   }
 
-  // First card of the trick — anything goes
+  // First card of the trick — anything goes, except: the bidder (who set
+  // the still-hidden trump) may not lead it before it's revealed, unless
+  // it's the only suit left in their hand.
   if (currentTrick.length === 0) {
+    if (isBidder && thurupSuit && !thurupRevealed && card.suit === thurupSuit) {
+      const hasOtherSuit = hand.some((c) => c.suit !== thurupSuit);
+      if (hasOtherSuit) {
+        return {
+          valid: false,
+          reason: `As the bidder, you can't lead Thurup (${SUIT_SYMBOLS[thurupSuit]}) before it's revealed.`,
+        };
+      }
+    }
     return { valid: true };
   }
 
@@ -201,7 +214,7 @@ export function validatePlay({ hand, card, currentTrick, leadSuit, thurupSuit, t
 /**
  * Get the list of legally playable card IDs for a player.
  */
-export function getValidMoves({ hand, currentTrick, leadSuit, thurupSuit, thurupRevealed }) {
+export function getValidMoves({ hand, currentTrick, leadSuit, thurupSuit, thurupRevealed, isBidder = false }) {
   return hand.filter((card) => {
     const result = validatePlay({
       hand,
@@ -210,6 +223,7 @@ export function getValidMoves({ hand, currentTrick, leadSuit, thurupSuit, thurup
       leadSuit,
       thurupSuit,
       thurupRevealed,
+      isBidder,
     });
     return result.valid;
   });

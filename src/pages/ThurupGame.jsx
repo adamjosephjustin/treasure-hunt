@@ -13,6 +13,7 @@ import { useThurupGame } from '../thurup/useThurupGame';
 import { useThurupRoom } from '../thurup/useThurupRoom';
 import { useChat } from '../thurup/useChat';
 import { useVoiceChat } from '../thurup/useVoiceChat';
+import { usePresence } from '../thurup/usePresence';
 import { HostEngine } from '../thurup/hostEngine';
 import ThurupCard, { ThurupIndicator } from '../thurup/ThurupCard';
 import ThurupScoreboard, { RunningScore } from '../thurup/ThurupScoreboard';
@@ -31,9 +32,7 @@ export default function ThurupGamePage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const roomId = location.state?.roomId;
   const locationPlayers = location.state?.players;
-  const isHost = location.state?.isHost;
 
   // Pause background music
   useEffect(() => {
@@ -41,10 +40,23 @@ export default function ThurupGamePage() {
   }, []);
 
   const { game, hand, loading, mySeat, isMyTurn, phase, validMoveIds, canRequestReveal, submitBid, passBid, setThurup, playCard, requestReveal } = useThurupGame(gameId);
+
+  const uid = getUid();
+
+  // ─── roomId / isHost — mobile-reload-safe ──────────────
+  // Mobile browsers routinely kill and reload backgrounded tabs, which wipes
+  // React Router navigation `state`. Once the game document has loaded we
+  // trust it (it's authoritative and persists across reloads); the nav-state
+  // values are only needed for the very first render, before the game doc
+  // exists yet (i.e. the host is about to create it).
+  const roomId = game?.roomId || location.state?.roomId;
+  const isHost = game ? game.host === uid : !!location.state?.isHost;
+
   const { room } = useThurupRoom(roomId);
   const { messages, sendMessage, unreadCount, markVisible } = useChat(roomId);
   const { isInVoice, isMuted, speakingPeers, voiceError, joinVoice, leaveVoice, toggleMute } =
     useVoiceChat(roomId, game?.players);
+  const { stalePeers } = usePresence(roomId);
 
   const [bidAmount, setBidAmount] = useState(MIN_BID);
   const [selectedThurup, setSelectedThurup] = useState(null);
@@ -52,12 +64,13 @@ export default function ThurupGamePage() {
   const [showRules, setShowRules] = useState(false);
   const hostEngineRef = useRef(null);
 
-  const uid = getUid();
-
   // ─── Host engine lifecycle ────────────────────────────
+  // Guarded by a ref (not effect deps) so that later game-state updates
+  // (every bid/play triggers a new Firestore snapshot) never tear down and
+  // recreate the engine — only isHost/gameId/roomId flipping does.
 
   useEffect(() => {
-    if (!isHost || !gameId || !roomId) return;
+    if (hostEngineRef.current || !isHost || !gameId || !roomId) return;
 
     const players = locationPlayers || game?.players || [];
     if (players.length < 4) return;
@@ -65,7 +78,8 @@ export default function ThurupGamePage() {
     const engine = new HostEngine(gameId, roomId, uid, players, 0);
     hostEngineRef.current = engine;
 
-    // Start or resume
+    // Start (fresh game, e.g. just navigated from the room) or resume
+    // (game doc already exists, e.g. the host's tab reloaded mid-game).
     (async () => {
       try {
         if (!game) {
@@ -75,10 +89,14 @@ export default function ThurupGamePage() {
         }
       } catch (e) {
         console.error('Host engine error:', e);
+        hostEngineRef.current = null;
       }
     })();
 
-    return () => engine.destroy();
+    return () => {
+      engine.destroy();
+      hostEngineRef.current = null;
+    };
   }, [isHost, gameId, roomId]);
 
   // ─── Toast for game events ────────────────────────────
@@ -235,6 +253,7 @@ export default function ThurupGamePage() {
               isCurrentTurn={game.currentPlayer === ((mySeat + 2) % 4)}
               cardCount={getCardCount(getPlayerAtPosition(2)?.uid)}
               isSpeaking={speakingPeers?.has(getPlayerAtPosition(2)?.uid)}
+              isStale={stalePeers?.has(getPlayerAtPosition(2)?.uid)}
               label="Partner"
             />
           </div>
@@ -246,6 +265,7 @@ export default function ThurupGamePage() {
               isCurrentTurn={game.currentPlayer === ((mySeat + 3) % 4)}
               cardCount={getCardCount(getPlayerAtPosition(3)?.uid)}
               isSpeaking={speakingPeers?.has(getPlayerAtPosition(3)?.uid)}
+              isStale={stalePeers?.has(getPlayerAtPosition(3)?.uid)}
               label="Left"
             />
           </div>
@@ -298,6 +318,7 @@ export default function ThurupGamePage() {
               isCurrentTurn={game.currentPlayer === ((mySeat + 1) % 4)}
               cardCount={getCardCount(getPlayerAtPosition(1)?.uid)}
               isSpeaking={speakingPeers?.has(getPlayerAtPosition(1)?.uid)}
+              isStale={stalePeers?.has(getPlayerAtPosition(1)?.uid)}
               label="Right"
             />
           </div>
@@ -324,7 +345,7 @@ export default function ThurupGamePage() {
                 delay={i * 0.05}
                 style={{
                   transform: `rotate(${(i - (hand.length - 1) / 2) * 4}deg)`,
-                  marginLeft: i > 0 ? '-20px' : '0',
+                  marginLeft: i > 0 ? 'var(--thurup-hand-overlap, -20px)' : '0',
                   zIndex: i,
                 }}
               />
@@ -436,7 +457,7 @@ export default function ThurupGamePage() {
                       margin: '0 4px'
                     }}
                   >
-                    <ThurupCard card={card} />
+                    <ThurupCard card={card} small />
                   </motion.div>
                 ))}
               </div>
@@ -510,6 +531,7 @@ export default function ThurupGamePage() {
                   <li><strong>Points:</strong> J=3, 9=2, A=1, 10=1 (Total: 28)</li>
                   <li><strong>Must follow suit</strong> — play a card of the led suit if you have one</li>
                   <li><strong>Thurup (Trump)</strong> — bid winner sets a secret trump suit</li>
+                  <li>The bidder can't <strong>lead</strong> Thurup before it's revealed (unless it's their only suit)</li>
                   <li>If you can't follow suit, you can <strong>request Thurup reveal</strong></li>
                   <li>After reveal, you <strong>must play trump</strong> if you have one</li>
                   <li>8 tricks per round, team with bid must meet their target</li>
@@ -550,17 +572,19 @@ export default function ThurupGamePage() {
 }
 
 /** Compact player seat component */
-function PlayerSeat({ player, isCurrentTurn, cardCount, isSpeaking, label }) {
+function PlayerSeat({ player, isCurrentTurn, cardCount, isSpeaking, isStale, label }) {
   if (!player) return <div className="player-seat player-seat--empty">Waiting...</div>;
 
   return (
-    <div className={`player-seat ${isCurrentTurn ? 'player-seat--active' : ''} ${isSpeaking ? 'player-seat--speaking' : ''}`}>
+    <div className={`player-seat ${isCurrentTurn ? 'player-seat--active' : ''} ${isSpeaking ? 'player-seat--speaking' : ''} ${isStale ? 'player-seat--stale' : ''}`}>
       <div className="player-seat__avatar">
         {player.displayName?.[0]?.toUpperCase() || '?'}
+        {isStale && <span className="player-seat__stale-dot" title="Connection lost" />}
       </div>
       <div className="player-seat__name">{player.displayName}</div>
       <div className="player-seat__meta">
         <span className="player-seat__team">Team {player.seat % 2 === 0 ? 'A' : 'B'}</span>
+        {isStale && <span className="player-seat__stale-label">reconnecting…</span>}
       </div>
       {/* Card backs for other players */}
       <div className="player-seat__cards">

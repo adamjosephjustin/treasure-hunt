@@ -383,6 +383,7 @@ export class HostEngine {
       leadSuit: this.state.leadSuit,
       thurupSuit: this.thurupSuit,
       thurupRevealed: this.state.thurupRevealed,
+      isBidder: seat === this.state.bid.seat,
     });
 
     if (!result.valid) {

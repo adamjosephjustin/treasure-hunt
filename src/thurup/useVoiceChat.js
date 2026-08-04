@@ -21,9 +21,33 @@ import {
   getUid,
 } from '../utils/firebase';
 
+// STUN alone frequently fails to establish a peer connection when either
+// side is on a cellular network (carrier-grade NAT is common on mobile
+// data) or a locked-down WiFi — the call needs a TURN relay to fall back
+// on. openrelay.metered.ca publishes these credentials as a free, public
+// relay for exactly this use case. It's fine for a friends' game, but has
+// no uptime guarantee — for guaranteed reliability, swap in your own
+// TURN credentials (e.g. Twilio NTS, Metered.ca's paid tier, or a
+// self-hosted coturn instance) here.
 const ICE_SERVERS = [
   { urls: 'stun:stun.l.google.com:19302' },
   { urls: 'stun:stun1.l.google.com:19302' },
+  { urls: 'stun:stun.relay.metered.ca:80' },
+  {
+    urls: 'turn:global.relay.metered.ca:80',
+    username: 'openrelayproject',
+    credential: 'openrelayproject',
+  },
+  {
+    urls: 'turn:global.relay.metered.ca:443',
+    username: 'openrelayproject',
+    credential: 'openrelayproject',
+  },
+  {
+    urls: 'turn:global.relay.metered.ca:443?transport=tcp',
+    username: 'openrelayproject',
+    credential: 'openrelayproject',
+  },
 ];
 
 export function useVoiceChat(roomId, players) {
