@@ -507,20 +507,25 @@ export class HostEngine {
       return this._rejectAction(seat, 'You have the led suit — you cannot request a reveal.');
     }
 
-    // Reveal!
+    await this._revealThurup(seat, `Thurup revealed: ${this.thurupSuit}`);
+    await this._syncState();
+  }
+
+  /**
+   * Shared by a player-requested reveal and the forced auto-reveal
+   * below. Marks Thurup revealed and — critically — returns the
+   * set-aside indicator card to the bidder's hand: they only had 7
+   * cards while it was hidden, so without this they'd have nothing
+   * left to play once every other card runs out.
+   */
+  async _revealThurup(triggerSeat, detail) {
+    if (this.state.thurupRevealed) return;
+
     this.state.thurupRevealed = true;
     this.state.thurupSuit = this.thurupSuit;
     this.state.thurupCard = { suit: this.thurupSuit, hidden: false };
-    this.state.lastAction = {
-      seat,
-      type: 'requestReveal',
-      valid: true,
-      detail: `Thurup revealed: ${this.thurupSuit}`,
-    };
+    this.state.lastAction = { seat: triggerSeat, type: 'requestReveal', valid: true, detail };
 
-    // The indicator card set aside in _handleSetThurup is one of the
-    // bidder's 8 cards — it's no longer secret, so it comes back into
-    // their hand to be played like any other.
     if (this.thurupIndicatorCard) {
       const bidderUid = this.state.players.find((p) => p.seat === this.state.bid.seat)?.uid;
       if (bidderUid && this.hands[bidderUid]) {
@@ -532,8 +537,6 @@ export class HostEngine {
       }
       this.thurupIndicatorCard = null;
     }
-
-    await this._syncState();
   }
 
   // ─── Trick completion ──────────────────────────────────
@@ -578,6 +581,16 @@ export class HostEngine {
         this.state.trickWinner = null;
         this.state.currentPlayer = winningSeat; // Winner leads next
         this.state.phase = PHASE.PLAYING;
+
+        // Reveal is otherwise entirely optional — if nobody's called for
+        // it by the final trick, force it now. The bidder only ever had
+        // 7 cards (one set aside as the indicator); without this they'd
+        // have nothing left to play for trick 8 while everyone else
+        // still has one card in hand.
+        if (this.state.trickNumber === TOTAL_TRICKS && !this.state.thurupRevealed) {
+          await this._revealThurup(-1, `Thurup auto-revealed for the final trick: ${this.thurupSuit}`);
+        }
+
         await this._syncState();
       }
     }, 2500);
@@ -649,9 +662,12 @@ export class HostEngine {
   // ─── Re-deal (all players passed) ──────────────────────
 
   async _reDeal() {
-    // Reset and start fresh with next dealer
+    // Reset and start fresh with next dealer. Can only ever fire before
+    // anyone has bid (all-pass in round 1), so thurupIndicatorCard is
+    // already null here — reset defensively anyway.
     const nextDealer = getNextSeat(this.dealerSeat);
     this.dealerSeat = nextDealer;
+    this.thurupIndicatorCard = null;
     await this.start();
   }
 
