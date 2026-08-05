@@ -150,11 +150,25 @@ export default function ThurupScoreboard({ game, onNextRound, onNewSeries, onBac
 export function RunningScore({ game, room }) {
   if (!game) return null;
 
+  // Once bidding is settled, show the bidding team's progress toward
+  // their own bid — "4/15" — instead of a bare point count, since that's
+  // the number that actually matters for the round.
+  const hasBid = game.bid && game.bid.seat !== -1 && game.bid.amount > 0;
+  const bidderTeam = hasBid ? (game.bid.seat % 2 === 0 ? 'A' : 'B') : null;
+
+  const formatTeamScore = (team, points) =>
+    bidderTeam === team ? `${points}/${game.bid.amount}` : `${points} pts`;
+
   return (
     <div className="running-score">
       <div className="running-score__row">
         <span className="running-score__label">Team A</span>
-        <span className="running-score__value">{game.teamAPoints || 0} pts</span>
+        <span
+          className={`running-score__value ${bidderTeam === 'A' ? 'running-score__value--bidder' : ''}`}
+          title={bidderTeam === 'A' ? `Team A bid ${game.bid.amount} — needs this many points to make it` : undefined}
+        >
+          {formatTeamScore('A', game.teamAPoints || 0)}
+        </span>
         <span className="running-score__petti" title="Petti remaining">
           🎴{room?.teamAPetti ?? STARTING_PETTI}
         </span>
@@ -162,7 +176,12 @@ export function RunningScore({ game, room }) {
       <div className="running-score__divider">|</div>
       <div className="running-score__row">
         <span className="running-score__label">Team B</span>
-        <span className="running-score__value">{game.teamBPoints || 0} pts</span>
+        <span
+          className={`running-score__value ${bidderTeam === 'B' ? 'running-score__value--bidder' : ''}`}
+          title={bidderTeam === 'B' ? `Team B bid ${game.bid.amount} — needs this many points to make it` : undefined}
+        >
+          {formatTeamScore('B', game.teamBPoints || 0)}
+        </span>
         <span className="running-score__petti" title="Petti remaining">
           🎴{room?.teamBPetti ?? STARTING_PETTI}
         </span>

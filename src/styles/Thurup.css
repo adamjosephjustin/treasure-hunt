@@ -511,6 +511,7 @@
 .running-score__row { display: flex; align-items: center; gap: 0.3rem; }
 .running-score__label { color: rgba(245,240,230,0.5); font-weight: 500; }
 .running-score__value { color: var(--thurup-warm-white); font-weight: 700; }
+.running-score__value--bidder { color: var(--thurup-gold-light); }
 .running-score__game-pts { color: var(--thurup-gold); font-size: 0.7rem; }
 .running-score__petti { color: var(--thurup-gold-light); font-size: 0.75rem; font-weight: 600; }
 .running-score__divider { color: rgba(245,240,230,0.2); }
