@@ -7,6 +7,16 @@ class AudioManager {
   constructor() {
     this.music = null;
     this.muted = true; // controls background music only
+    // Pages that have their own audio (Thurup, with its voice chat)
+    // suppress background music entirely while mounted. This is a hard
+    // block, separate from `muted`: ProgressContext restores the user's
+    // globally-saved mute preference asynchronously on every full page
+    // load (it wraps the whole app, Thurup included), which can call
+    // setMuted(false) — and therefore playMusic() — well after a Thurup
+    // page's own one-time "pause on mount" effect has already run and
+    // finished. Without this flag that race would start Lumina Forest's
+    // music on top of a Thurup game/voice call on essentially any reload.
+    this.suppressed = false;
   }
 
   init() {
@@ -27,8 +37,13 @@ class AudioManager {
     }
   }
 
+  setSuppressed(isSuppressed) {
+    this.suppressed = isSuppressed;
+    if (isSuppressed) this.music?.pause();
+  }
+
   async playMusic() {
-    if (this.muted) return;
+    if (this.muted || this.suppressed) return;
     if (!this.music) this.init();
     try {
       await this.music.play();

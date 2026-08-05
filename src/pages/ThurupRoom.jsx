@@ -38,9 +38,14 @@ export default function ThurupRoom() {
   const isHost = room?.host === uid;
   const myPlayer = room?.players?.find((p) => p.uid === uid);
 
-  // Pause background music
+  // Suppress Lumina Forest's background music for as long as this page is
+  // mounted. A one-time pause isn't enough: ProgressContext (wrapping the
+  // whole app) asynchronously restores the player's globally-saved mute
+  // preference on every load and can call playMusic() well after mount,
+  // which would start the main game's music on top of Thurup/voice chat.
   useEffect(() => {
-    if (audioManager.music) audioManager.music.pause();
+    audioManager.setSuppressed(true);
+    return () => audioManager.setSuppressed(false);
   }, []);
 
   // Navigate to game when game starts

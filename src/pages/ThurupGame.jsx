@@ -20,7 +20,7 @@ import ThurupScoreboard, { RunningScore } from '../thurup/ThurupScoreboard';
 import ChatPanel from '../thurup/ChatPanel';
 import VoiceChatControls from '../thurup/VoiceChatControls';
 import { getUid } from '../utils/firebase';
-import { SUIT_SYMBOLS, PHASE, MIN_BID, MAX_BID, SUITS } from '../thurup/gameEngine';
+import { SUIT_SYMBOLS, SUIT_COLORS, PHASE, MIN_BID, MAX_BID, SUITS } from '../thurup/gameEngine';
 import { audioManager } from '../utils/audio';
 import '../styles/Thurup.css';
 import '../styles/ThurupCards.css';
@@ -34,12 +34,14 @@ export default function ThurupGamePage() {
 
   const locationPlayers = location.state?.players;
 
-  // Pause background music
+  // Suppress Lumina Forest's background music for as long as this page is
+  // mounted (see ThurupRoom.jsx for why a one-time pause isn't enough).
   useEffect(() => {
-    if (audioManager.music) audioManager.music.pause();
+    audioManager.setSuppressed(true);
+    return () => audioManager.setSuppressed(false);
   }, []);
 
-  const { game, hand, loading, mySeat, isMyTurn, phase, validMoveIds, canRequestReveal, submitBid, passBid, setThurup, playCard, requestReveal } = useThurupGame(gameId);
+  const { game, hand, loading, mySeat, isMyTurn, phase, validMoveIds, canRequestReveal, submitBid, passBid, setThurup, playCard, requestReveal, peekThurup } = useThurupGame(gameId);
 
   const uid = getUid();
 
@@ -62,7 +64,24 @@ export default function ThurupGamePage() {
   const [selectedThurup, setSelectedThurup] = useState(null);
   const [toast, setToast] = useState(null);
   const [showRules, setShowRules] = useState(false);
+  const [thurupPeek, setThurupPeek] = useState(null);
   const hostEngineRef = useRef(null);
+  const isBidder = mySeat !== -1 && game?.bid?.seat === mySeat;
+
+  // ─── Peek at my own Thurup ─────────────────────────────
+  // The bidder is the only one who ever knew the secret suit, and it's
+  // easy to forget mid-round which one it was — this re-fetches it
+  // privately (Firestore rules gate it to the bidder's own uid) without
+  // ever writing it anywhere visible to the other players.
+  const handlePeekThurup = async () => {
+    const suit = await peekThurup();
+    if (suit) {
+      setThurupPeek(suit);
+      setTimeout(() => setThurupPeek(null), 4000);
+    } else {
+      showToast("Couldn't check Thurup right now", 'error');
+    }
+  };
 
   // ─── Host engine lifecycle ────────────────────────────
   // Guarded by a ref (not effect deps) so that later game-state updates
@@ -222,27 +241,73 @@ export default function ThurupGamePage() {
 
   const myDisplayName = game.players?.find((p) => p.uid === uid)?.displayName || 'You';
 
+  // One consistent "whose turn" line, shown in the header for every phase
+  // that has an active turn — replaces having to hunt across different
+  // phase-specific panels to figure out who the game is waiting on.
+  const TURN_PHASES = [PHASE.BIDDING, PHASE.SECOND_BIDDING, PHASE.SETTING_THURUP, PHASE.PLAYING];
+  const turnLabel = TURN_PHASES.includes(phase)
+    ? isMyTurn
+      ? '🎯 Your turn'
+      : `⏳ Waiting on ${game.players?.find((p) => p.seat === game.currentPlayer)?.displayName || '…'}`
+    : null;
+
   return (
     <AnimatedPage className="thurup-game-page">
       <div className="thurup-game">
         {/* ─── Header bar ─────────────────────────── */}
         <div className="thurup-game__header">
           <RunningScore game={game} room={room} />
-          <div className="thurup-game__phase-indicator">
-            {phase === PHASE.BIDDING && '📢 Bidding (1st Round)'}
-            {phase === PHASE.SETTING_THURUP && '🔮 Setting Thurup'}
-            {phase === PHASE.SECOND_BIDDING && '📢 Bidding (2nd Round)'}
-            {phase === PHASE.PLAYING && `🃏 Trick ${game.trickNumber}/8`}
-            {phase === PHASE.TRICK_END && '✨ Trick Complete'}
-            {phase === PHASE.ROUND_END && '🏁 Round Over'}
+          <div className="thurup-game__status">
+            <div className="thurup-game__phase-indicator">
+              {phase === PHASE.BIDDING && '📢 Bidding — Round 1'}
+              {phase === PHASE.SETTING_THURUP && '🔮 Setting Thurup'}
+              {phase === PHASE.SECOND_BIDDING && '📢 Bidding — Round 2'}
+              {phase === PHASE.PLAYING && `🃏 Trick ${game.trickNumber} of 8`}
+              {phase === PHASE.TRICK_END && '✨ Trick Complete'}
+              {phase === PHASE.ROUND_END && '🏁 Round Over'}
+            </div>
+            {turnLabel && (
+              <div className={`thurup-game__turn-indicator ${isMyTurn ? 'thurup-game__turn-indicator--me' : ''}`}>
+                {turnLabel}
+              </div>
+            )}
           </div>
-          <button
-            className="thurup-btn thurup-btn--small thurup-btn--secondary"
-            onClick={() => setShowRules(!showRules)}
-          >
-            📖 Rules
-          </button>
+          <div className="thurup-game__header-actions">
+            {isBidder && !game.thurupRevealed && (
+              <button
+                className="thurup-btn thurup-btn--small thurup-btn--secondary"
+                onClick={handlePeekThurup}
+                title="Only visible to you"
+              >
+                👁️ My Thurup
+              </button>
+            )}
+            <button
+              className="thurup-btn thurup-btn--small thurup-btn--secondary"
+              onClick={() => setShowRules(!showRules)}
+            >
+              📖 Rules
+            </button>
+          </div>
         </div>
+
+        {/* Private Thurup peek — only the bidder ever sees this */}
+        <AnimatePresence>
+          {thurupPeek && (
+            <motion.div
+              className="thurup-peek-popover"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+            >
+              🤫 Your Thurup:{' '}
+              <strong className={`thurup-peek-popover__suit thurup-peek-popover__suit--${SUIT_COLORS[thurupPeek]}`}>
+                {SUIT_SYMBOLS[thurupPeek]} {thurupPeek}
+              </strong>
+              <span className="thurup-peek-popover__hint">only you can see this</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ─── Game table ─────────────────────────── */}
         <div className="thurup-table">
@@ -302,13 +367,7 @@ export default function ThurupGamePage() {
                 })}
               </AnimatePresence>
             </div>
-
-            {/* Turn indicator text */}
-            {phase === PHASE.PLAYING && (
-              <div className="thurup-table__turn-label">
-                {isMyTurn ? '🎯 Your Turn' : `Waiting for ${game.players?.find(p => p.seat === game.currentPlayer)?.displayName}...`}
-              </div>
-            )}
+            {/* Whose-turn text now lives once, in the header (thurup-game__turn-indicator) */}
           </div>
 
           {/* Right player */}
@@ -344,7 +403,11 @@ export default function ThurupGamePage() {
                 disabled={phase !== PHASE.PLAYING || !isMyTurn || !validMoveIds.includes(card.id)}
                 delay={i * 0.05}
                 style={{
-                  transform: `rotate(${(i - (hand.length - 1) / 2) * 4}deg)`,
+                  // --thurup-fan-degree shrinks at small breakpoints (see
+                  // Thurup.css) — a full 4deg-per-card fan is what made
+                  // the rank/suit text feel congested and hard to read
+                  // on a narrow phone; a flatter fan keeps it legible.
+                  transform: `rotate(calc(var(--thurup-fan-degree, 4) * ${i - (hand.length - 1) / 2} * 1deg))`,
                   marginLeft: i > 0 ? 'var(--thurup-hand-overlap, -20px)' : '0',
                   zIndex: i,
                 }}
@@ -416,16 +479,14 @@ export default function ThurupGamePage() {
           )}
         </AnimatePresence>
 
-        {/* Bidding status for non-active player */}
+        {/* Bidding status for non-active player — who's currently winning
+            the bid; who's turn is next now lives once, in the header. */}
         {(phase === PHASE.BIDDING || phase === PHASE.SECOND_BIDDING) && !isMyTurn && (
           <div className="thurup-bid-panel thurup-bid-panel--waiting">
             <p>
               {game.bid.amount > 0
                 ? `Current bid: ${game.bid.amount} by ${game.players?.find(p => p.seat === game.bid.seat)?.displayName}`
                 : 'Waiting for bids...'}
-            </p>
-            <p className="thurup-bid-panel__waiting-text">
-              Waiting for {game.players?.find(p => p.seat === game.currentPlayer)?.displayName}...
             </p>
           </div>
         )}

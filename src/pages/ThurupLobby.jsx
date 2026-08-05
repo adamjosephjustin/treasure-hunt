@@ -25,9 +25,11 @@ export default function ThurupLobby() {
   const searchParams = new URLSearchParams(location.search);
   const initialCode = searchParams.get('code') || '';
 
-  // Pause background music in Thurup game
+  // Suppress Lumina Forest's background music for as long as this page is
+  // mounted (see ThurupRoom.jsx for why a one-time pause isn't enough).
   React.useEffect(() => {
-    if (audioManager.music) audioManager.music.pause();
+    audioManager.setSuppressed(true);
+    return () => audioManager.setSuppressed(false);
   }, []);
 
   const [mode, setMode] = useState(initialCode ? 'join' : null); // 'create' | 'join'

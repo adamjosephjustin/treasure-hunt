@@ -12,6 +12,7 @@ import {
   db,
   doc,
   setDoc,
+  getDoc,
   onSnapshot,
   getUid,
   serverTimestamp,
@@ -22,7 +23,6 @@ export function useThurupGame(gameId) {
   const [game, setGame] = useState(null);
   const [hand, setHand] = useState([]);
   const [loading, setLoading] = useState(true);
-  const seqRef = useRef(0);
   const unsubGameRef = useRef(null);
   const unsubHandRef = useRef(null);
 
@@ -66,11 +66,16 @@ export function useThurupGame(gameId) {
   const _dispatch = useCallback(
     async (type, data = {}) => {
       if (!gameId || !uid) return;
-      seqRef.current += 1;
+      // Date.now() instead of a locally-incrementing counter: a counter
+      // resets to 0 on every reload, which — after a mobile tab reload —
+      // would look "older" than the seq the host already has on record
+      // for this player, causing the host to silently ignore the action
+      // and the player's turn to appear permanently stuck. Wall-clock
+      // time only moves forward, so it survives the reload.
       await setDoc(doc(db, 'thurup_games', gameId, 'actions', uid), {
         type,
         data,
-        seq: seqRef.current,
+        seq: Date.now(),
         timestamp: new Date().toISOString(),
       });
     },
@@ -101,6 +106,23 @@ export function useThurupGame(gameId) {
     () => _dispatch('requestReveal'),
     [_dispatch]
   );
+
+  /**
+   * Let the bidder privately re-check the Thurup suit they set, for as
+   * long as it stays hidden. Firestore rules only grant read access to
+   * the host and to whoever's uid is stamped as bidderUid on this doc —
+   * a non-bidder calling this just gets a permission-denied and null.
+   */
+  const peekThurup = useCallback(async () => {
+    if (!gameId) return null;
+    try {
+      const snap = await getDoc(doc(db, 'thurup_games', gameId, 'secrets', 'thurup'));
+      return snap.exists() ? snap.data().suit || null : null;
+    } catch (e) {
+      console.error('peekThurup failed:', e);
+      return null;
+    }
+  }, [gameId]);
 
   // ─── Computed values ────────────────────────────────────
 
@@ -145,5 +167,6 @@ export function useThurupGame(gameId) {
     setThurup,
     playCard,
     requestReveal,
+    peekThurup,
   };
 }

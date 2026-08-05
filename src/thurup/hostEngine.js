@@ -99,7 +99,7 @@ export class HostEngine {
     );
 
     // Listen for player actions
-    this._listenForActions();
+    await this._listenForActions();
   }
 
   /** Resume from existing Firestore state (e.g. after host page refresh) */
@@ -107,6 +107,12 @@ export class HostEngine {
     const snap = await getDoc(doc(db, 'thurup_games', this.gameId));
     if (!snap.exists()) throw new Error('Game not found');
     this.state = snap.data();
+    // The constructor always receives a placeholder dealer seat (see
+    // ThurupGame.jsx) since the real value only exists once a game doc
+    // does. Sync it from the loaded state so a later startNextRound()/
+    // _reDeal() (which read this.dealerSeat, not this.state.dealer)
+    // rotates from the correct seat instead of always seat 0.
+    this.dealerSeat = this.state.dealer;
 
     // Reload hands
     for (const p of this.players) {
@@ -134,7 +140,7 @@ export class HostEngine {
       this.remainingDeck = deckSnap.data().cards || [];
     }
 
-    this._listenForActions();
+    await this._listenForActions();
   }
 
   /** Clean up listeners */
@@ -146,23 +152,44 @@ export class HostEngine {
 
   // ─── Action listener ───────────────────────────────────
 
-  _listenForActions() {
-    for (const p of this.players) {
-      const ref = doc(db, 'thurup_games', this.gameId, 'actions', p.uid);
-      this.lastSeq[p.uid] = 0;
+  async _listenForActions() {
+    // Each player's action doc is overwritten in place (not appended), so
+    // it still holds their LAST-EVER action after this round, this game,
+    // or an earlier session ends. Every call here (fresh start() *and*
+    // resume()) used to reset lastSeq to 0 and then attach onSnapshot,
+    // which fires immediately with whatever's currently in that doc —
+    // replaying a player's already-handled bid/play as if it were brand
+    // new the moment the host resumes (e.g. after its own tab reloads).
+    // Reading each doc once up front and seeding lastSeq from its
+    // current seq treats pre-existing actions as already-handled, so
+    // only genuinely new actions (submitted after this listener attaches)
+    // get processed.
+    await Promise.all(
+      this.players.map(async (p) => {
+        const ref = doc(db, 'thurup_games', this.gameId, 'actions', p.uid);
 
-      const unsub = onSnapshot(ref, (snap) => {
-        if (this.destroyed) return;
-        if (!snap.exists()) return;
-        const action = snap.data();
-        if (!action.seq || action.seq <= this.lastSeq[p.uid]) return;
+        let baselineSeq = 0;
+        try {
+          const existing = await getDoc(ref);
+          if (existing.exists()) baselineSeq = existing.data().seq || 0;
+        } catch (e) {
+          console.error('Failed to read baseline action seq:', e);
+        }
+        this.lastSeq[p.uid] = baselineSeq;
 
-        this.lastSeq[p.uid] = action.seq;
-        this._processAction(p.uid, p.seat, action);
-      });
+        const unsub = onSnapshot(ref, (snap) => {
+          if (this.destroyed) return;
+          if (!snap.exists()) return;
+          const action = snap.data();
+          if (!action.seq || action.seq <= this.lastSeq[p.uid]) return;
 
-      this.unsubActions.push(unsub);
-    }
+          this.lastSeq[p.uid] = action.seq;
+          this._processAction(p.uid, p.seat, action);
+        });
+
+        this.unsubActions.push(unsub);
+      })
+    );
   }
 
   // ─── Action processing ─────────────────────────────────
@@ -313,11 +340,13 @@ export class HostEngine {
       return this._rejectAction(seat, 'Invalid suit.');
     }
 
-    // Store the secret
+    // Store the secret — bidderUid lets the bidder (and only the bidder)
+    // read this back later to privately re-check what they set, without
+    // revealing it to the rest of the table (see firestore.rules).
     this.thurupSuit = suit;
     await setDoc(
       doc(db, 'thurup_games', this.gameId, 'secrets', 'thurup'),
-      { suit }
+      { suit, bidderUid: uid }
     );
 
     // Deal second round of 4 cards

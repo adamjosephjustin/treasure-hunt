@@ -21,6 +21,10 @@
   /* Overlap between fanned hand cards — shrinks at smaller breakpoints
      below so each card keeps a reasonable tap target. */
   --thurup-hand-overlap: -20px;
+  /* Per-card fan rotation angle (degrees) — also shrinks at small
+     breakpoints, since a steep fan is what made the rank/suit text in
+     each card's corner feel congested and hard to read on a phone. */
+  --thurup-fan-degree: 4;
 }
 
 /* iOS/Android pull-to-refresh is a real hazard here: a stray downward
@@ -434,10 +438,67 @@
   gap: 0.5rem;
 }
 
+.thurup-game__status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  text-align: center;
+}
+
 .thurup-game__phase-indicator {
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--thurup-gold);
+}
+
+/* Single, consistent "whose turn" line for every phase — replaces the
+   waiting-for-X text that used to be scattered across separate
+   phase-specific panels. */
+.thurup-game__turn-indicator {
+  font-size: 0.75rem;
+  color: rgba(245, 240, 230, 0.6);
+}
+
+.thurup-game__turn-indicator--me {
+  color: var(--thurup-gold-light);
+  font-weight: 600;
+}
+
+.thurup-game__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Private Thurup peek — styled distinctly (dashed gold border, "only you"
+   hint) so it visually reads as private, unlike the shared toast/status
+   panels which everyone effectively has an equivalent of. */
+.thurup-peek-popover {
+  position: fixed;
+  top: calc(3.5rem + env(safe-area-inset-top));
+  right: calc(1rem + env(safe-area-inset-right));
+  background: var(--thurup-panel);
+  border: 1px dashed var(--thurup-gold);
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  color: var(--thurup-warm-white);
+  backdrop-filter: blur(12px);
+  z-index: 35;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+.thurup-peek-popover__suit--red { color: #fc8181; }
+.thurup-peek-popover__suit--black { color: var(--thurup-warm-white); }
+
+.thurup-peek-popover__hint {
+  font-size: 0.65rem;
+  font-style: italic;
+  color: rgba(245, 240, 230, 0.5);
 }
 
 /* Running score */
@@ -514,15 +575,6 @@
 .thurup-table__played-card--top { top: 0; left: 50%; transform: translateX(-50%); }
 .thurup-table__played-card--left { left: 0; top: 50%; transform: translateY(-50%); }
 .thurup-table__played-card--right { right: 0; top: 50%; transform: translateY(-50%); }
-
-.thurup-table__turn-label {
-  font-size: 0.85rem;
-  color: var(--thurup-gold);
-  font-weight: 600;
-  text-align: center;
-  position: absolute;
-  bottom: 8px;
-}
 
 /* My info */
 .thurup-table__my-info { text-align: center; }
@@ -712,7 +764,6 @@
 }
 
 .thurup-bid-panel__actions { display: flex; gap: 0.75rem; justify-content: center; }
-.thurup-bid-panel__waiting-text { font-style: italic; font-size: 0.8rem; margin-top: 0.3rem; }
 
 /* ─── Thurup selection panel ────────────────────────────── */
 
@@ -1111,7 +1162,7 @@
 /* ─── Responsive ────────────────────────────────────────── */
 
 @media (max-width: 768px) {
-  :root { --thurup-hand-overlap: -18px; }
+  :root { --thurup-hand-overlap: -18px; --thurup-fan-degree: 3; }
 
   .thurup-table {
     grid-template-columns: 100px 1fr 100px;
@@ -1130,7 +1181,10 @@
 }
 
 @media (max-width: 480px) {
-  :root { --thurup-hand-overlap: -14px; }
+  /* Less overlap + a flatter fan than before: the previous -14px/4deg
+     combo left only a ~28px sliver of each card visible, with its
+     rank/suit text on an angle — the "congested" hand players reported. */
+  :root { --thurup-hand-overlap: -11px; --thurup-fan-degree: 2; }
 
   .thurup-room__table {
     width: 240px;
@@ -1179,7 +1233,7 @@
    circular room table and card fan need one more size step down so
    nothing overflows a ~320-360px viewport. */
 @media (max-width: 360px) {
-  :root { --thurup-hand-overlap: -10px; }
+  :root { --thurup-hand-overlap: -10px; --thurup-fan-degree: 1; }
 
   .thurup-room__table { width: 210px; height: 210px; }
   .thurup-room__table-felt { inset: 24px; }

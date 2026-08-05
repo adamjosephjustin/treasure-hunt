@@ -214,17 +214,36 @@
 }
 
 @media (max-width: 480px) {
+  /* Slightly bigger than before + less aggressive overlap/fan (see
+     Thurup.css) — the previous 48px cards left barely any legible
+     surface per card once fanned and overlapped. */
   .thurup-card {
-    width: 48px;
-    height: 68px;
+    width: 54px;
+    height: 76px;
   }
   .thurup-card--small {
-    width: 36px;
-    height: 50px;
+    width: 38px;
+    height: 54px;
+  }
+  .thurup-card__rank { font-size: 0.78rem; }
+  .thurup-card__suit-small { font-size: 0.62rem; }
+  .thurup-card__suit-large { font-size: 1.35rem; }
+  .thurup-card__points { display: none; }
+}
+
+/* Extra-small phones — matches the 360px tier in Thurup.css. */
+@media (max-width: 360px) {
+  .thurup-card {
+    width: 46px;
+    height: 65px;
+  }
+  .thurup-card--small {
+    width: 34px;
+    height: 48px;
   }
   .thurup-card__rank { font-size: 0.7rem; }
-  .thurup-card__suit-large { font-size: 1.2rem; }
-  .thurup-card__points { display: none; }
+  .thurup-card__suit-small { font-size: 0.56rem; }
+  .thurup-card__suit-large { font-size: 1.15rem; }
 }
 
 /* Short-viewport / landscape phones — see the matching table/hand rules
