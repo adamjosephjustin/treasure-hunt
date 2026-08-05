@@ -93,7 +93,7 @@ export function useThurupGame(gameId) {
   );
 
   const setThurup = useCallback(
-    (suit) => _dispatch('setThurup', { suit }),
+    (suit, cardId) => _dispatch('setThurup', { suit, cardId }),
     [_dispatch]
   );
 

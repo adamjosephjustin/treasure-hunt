@@ -118,15 +118,34 @@ export default function ThurupGamePage() {
     };
   }, [isHost, gameId, roomId]);
 
-  // ─── Toast for game events ────────────────────────────
+  // ─── Toast for game events + play-lock reset ───────────
+  // Both live in this one effect (rather than two separate effects) so
+  // playLockRef is only ever mutated from a single effect location —
+  // React's hooks linter flags a ref touched by more than one effect.
+  // lastProcessedActionRef stops the toast branch from re-firing on
+  // every isMyTurn flip when lastAction itself hasn't actually changed.
+
+  const lastProcessedActionRef = useRef(null);
+  const playLockRef = useRef(false);
 
   useEffect(() => {
-    if (!game?.lastAction) return;
+    // A new turn starting always clears the play-lock (see handlePlayCard).
+    if (!isMyTurn) playLockRef.current = false;
+
+    if (!game?.lastAction || game.lastAction === lastProcessedActionRef.current) return;
+    lastProcessedActionRef.current = game.lastAction;
     const la = game.lastAction;
 
     if (la.type === 'error' && la.seat === mySeat) {
       showToast(la.detail, 'error');
       audioManager.playSFX('wrong');
+      // A rejected play doesn't change whose turn it is, so the isMyTurn
+      // check above doesn't clear the lock — clear it here too, or the
+      // very first server-side-only rejection (e.g. the bidder trying
+      // their own trump before reveal, which the client can't predict
+      // since it doesn't know the secret suit) permanently locks out
+      // every other card for the rest of that turn.
+      playLockRef.current = false;
     } else if (la.type === 'trickWin') {
       const winner = game.players.find((p) => p.seat === la.seat);
       showToast(`${winner?.displayName || 'Player'} won the trick! ${la.detail}`, 'success');
@@ -137,7 +156,7 @@ export default function ThurupGamePage() {
     } else if (la.type === 'bid' && la.seat !== mySeat) {
       showToast(la.detail, 'info');
     }
-  }, [game?.lastAction]);
+  }, [game?.lastAction, isMyTurn]);
 
   const showToast = (message, type = 'info') => {
     setToast({ message, type });
@@ -163,17 +182,12 @@ export default function ThurupGamePage() {
   }, [game?.bid?.amount, phase, mySeat]);
 
   // ─── Card play handler ────────────────────────────────
-  // playLockRef guards against a double-tap firing two plays before the
-  // round trip confirms the turn moved on — the host now also serializes
-  // action processing (see hostEngine.js) so this can't corrupt a trick
-  // even without this lock, but blocking the second tap client-side
-  // avoids a pointless rejected-action round trip too.
-
-  const playLockRef = useRef(false);
-
-  useEffect(() => {
-    if (!isMyTurn) playLockRef.current = false;
-  }, [isMyTurn]);
+  // playLockRef (declared above, reset in the effect above) guards
+  // against a double-tap firing two plays before the round trip confirms
+  // the turn moved on — the host now also serializes action processing
+  // (see hostEngine.js) so this can't corrupt a trick even without this
+  // lock, but blocking the second tap client-side avoids a pointless
+  // rejected-action round trip too.
 
   const handlePlayCard = useCallback(
     (card) => {
@@ -195,10 +209,10 @@ export default function ThurupGamePage() {
 
   const handleSetThurup = () => {
     if (!selectedThurup) {
-      showToast('Select a suit for Thurup', 'error');
+      showToast('Select a card for Thurup', 'error');
       return;
     }
-    setThurup(selectedThurup);
+    setThurup(selectedThurup.suit, selectedThurup.id);
     audioManager.playSFX('success');
   };
 
@@ -233,13 +247,20 @@ export default function ThurupGamePage() {
   const getCardCount = (playerUid) => {
     // We don't know exact card count of others, estimate from trick number
     if (!game) return 0;
-    const cardsPlayed = (game.trickNumber - 1) * 4 + (game.currentTrick?.length || 0);
     const cardsPerPlayer = phase === PHASE.BIDDING || phase === PHASE.SETTING_THURUP ? 4 : 8;
     const tricksCompleted = game.trickNumber - 1;
-    return cardsPerPlayer - tricksCompleted - (game.currentTrick?.some(t => {
+    let count = cardsPerPlayer - tricksCompleted - (game.currentTrick?.some(t => {
       const p = game.players?.find(pl => pl.seat === t.seat);
       return p?.uid === playerUid;
     }) ? 1 : 0);
+
+    // The bidder is holding one fewer card while their Thurup indicator
+    // card is set aside face-down — it returns to their hand on reveal.
+    const bidderUid = game.players?.find((p) => p.seat === game.bid?.seat)?.uid;
+    if (playerUid === bidderUid && game.thurupCard && !game.thurupRevealed) {
+      count -= 1;
+    }
+    return count;
   };
 
   // ─── Loading ──────────────────────────────────────────
@@ -524,23 +545,25 @@ export default function ThurupGamePage() {
             >
               <h3 className="thurup-select-panel__title">🔮 Choose Thurup Suit</h3>
               <p className="thurup-select-panel__desc">
-                Select the trump suit based on your strongest cards
+                Pick a card — its suit becomes Thurup. That exact card is set aside
+                face-down until it's revealed, so you'll be playing with one fewer
+                card until then.
               </p>
               <div className="thurup-select-panel__suits" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '1.25rem' }}>
                 {hand.map((card) => (
                   <motion.div
                     key={card.id}
-                    onClick={() => setSelectedThurup(card.suit)}
+                    onClick={() => setSelectedThurup(card)}
                     whileHover={{ scale: 1.1, y: -10 }}
                     whileTap={{ scale: 0.95 }}
-                    style={{ 
-                      cursor: 'pointer', 
-                      filter: selectedThurup && selectedThurup !== card.suit ? 'brightness(0.5)' : 'none',
+                    style={{
+                      cursor: 'pointer',
+                      filter: selectedThurup && selectedThurup.id !== card.id ? 'brightness(0.5)' : 'none',
                       transition: 'filter 0.2s',
                       margin: '0 4px'
                     }}
                   >
-                    <ThurupCard card={card} small />
+                    <ThurupCard card={card} small selected={selectedThurup?.id === card.id} />
                   </motion.div>
                 ))}
               </div>
@@ -614,8 +637,8 @@ export default function ThurupGamePage() {
                   <li><strong>Card Rank:</strong> J &gt; 9 &gt; A &gt; 10 &gt; K &gt; Q &gt; 8 &gt; 7</li>
                   <li><strong>Points:</strong> J=3, 9=2, A=1, 10=1 (Total: 28)</li>
                   <li><strong>Must follow suit</strong> — play a card of the led suit if you have one</li>
-                  <li><strong>Thurup (Trump)</strong> — bid winner sets a secret trump suit</li>
-                  <li>The bidder can't <strong>lead</strong> Thurup before it's revealed (unless it's their only suit)</li>
+                  <li><strong>Thurup (Trump)</strong> — bid winner picks a card; its suit becomes the secret trump. That card is set aside face-down (one fewer in hand) until reveal</li>
+                  <li>The bidder can't <strong>play</strong> Thurup before it's revealed — lead or discard — unless it's their only option</li>
                   <li>If you can't follow suit, you can <strong>request Thurup reveal</strong></li>
                   <li>After reveal, you <strong>must play trump</strong> if you have one</li>
                   <li>8 tricks per round, team with bid must meet their target</li>

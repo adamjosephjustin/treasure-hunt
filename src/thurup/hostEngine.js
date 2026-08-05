@@ -51,6 +51,7 @@ export class HostEngine {
     this.state = null;
     this.hands = {};               // { uid: [cards] }
     this.thurupSuit = null;        // Secret until revealed
+    this.thurupIndicatorCard = null; // The card set aside face-down; returns to the bidder's hand on reveal
     this.remainingDeck = [];
 
     // Track processed actions
@@ -129,12 +130,14 @@ export class HostEngine {
       }
     }
 
-    // Reload thurup secret
+    // Reload thurup secret (and the set-aside indicator card, if any —
+    // see _handleSetThurup / _handleRequestReveal)
     const secretSnap = await getDoc(
       doc(db, 'thurup_games', this.gameId, 'secrets', 'thurup')
     );
     if (secretSnap.exists()) {
       this.thurupSuit = secretSnap.data().suit;
+      this.thurupIndicatorCard = secretSnap.data().card || null;
     }
 
     // Reload remaining deck
@@ -357,18 +360,29 @@ export class HostEngine {
       return this._rejectAction(seat, 'Only the bid winner can set Thurup.');
     }
 
-    const { suit } = data;
+    const { suit, cardId } = data;
     if (!['hearts', 'diamonds', 'clubs', 'spades'].includes(suit)) {
       return this._rejectAction(seat, 'Invalid suit.');
     }
 
-    // Store the secret — bidderUid lets the bidder (and only the bidder)
-    // read this back later to privately re-check what they set, without
-    // revealing it to the rest of the table (see firestore.rules).
+    const hand = this.hands[uid];
+    const indicatorCard = hand.find((c) => c.id === cardId && c.suit === suit);
+    if (!indicatorCard) {
+      return this._rejectAction(seat, 'Invalid Thurup card.');
+    }
+
+    // The chosen card is set aside face-down as the actual physical
+    // Thurup indicator — same as the real game, the bidder is down a
+    // card until it's revealed (see _handleRequestReveal, which returns
+    // it to their hand). Store the card itself (not just the suit) so
+    // it can come back later; bidderUid lets the bidder — and only the
+    // bidder — read this back to privately re-check what they set.
     this.thurupSuit = suit;
+    this.thurupIndicatorCard = indicatorCard;
+    this.hands[uid] = hand.filter((c) => c.id !== cardId);
     await setDoc(
       doc(db, 'thurup_games', this.gameId, 'secrets', 'thurup'),
-      { suit, bidderUid: uid }
+      { suit, bidderUid: uid, card: indicatorCard }
     );
 
     // Deal second round of 4 cards
@@ -384,7 +398,8 @@ export class HostEngine {
       { cards: this.remainingDeck }
     );
 
-    // Merge new cards into existing hands
+    // Merge new cards into existing hands (the bidder's hand here is
+    // already one short — the indicator card removed above).
     const sortedPlayers = [...this.players].sort((a, b) => a.seat - b.seat);
     for (let i = 0; i < sortedPlayers.length; i++) {
       const p = sortedPlayers[i];
@@ -502,6 +517,21 @@ export class HostEngine {
       valid: true,
       detail: `Thurup revealed: ${this.thurupSuit}`,
     };
+
+    // The indicator card set aside in _handleSetThurup is one of the
+    // bidder's 8 cards — it's no longer secret, so it comes back into
+    // their hand to be played like any other.
+    if (this.thurupIndicatorCard) {
+      const bidderUid = this.state.players.find((p) => p.seat === this.state.bid.seat)?.uid;
+      if (bidderUid && this.hands[bidderUid]) {
+        this.hands[bidderUid] = sortHand([...this.hands[bidderUid], this.thurupIndicatorCard]);
+        await setDoc(
+          doc(db, 'thurup_games', this.gameId, 'hands', bidderUid),
+          { cards: this.hands[bidderUid] }
+        );
+      }
+      this.thurupIndicatorCard = null;
+    }
 
     await this._syncState();
   }
@@ -630,6 +660,7 @@ export class HostEngine {
   async startNextRound() {
     this.dealerSeat = getNextSeat(this.dealerSeat);
     this.thurupSuit = null;
+    this.thurupIndicatorCard = null;
     this.remainingDeck = [];
     this.lastSeq = {};
     this.unsubActions.forEach((u) => u());
