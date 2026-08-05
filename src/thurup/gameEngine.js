@@ -172,11 +172,18 @@ export function validatePlay({ hand, card, currentTrick, leadSuit, thurupSuit, t
     return { valid: false, reason: "You don't have this card." };
   }
 
-  // First card of the trick — anything goes, except: the bidder (who set
-  // the still-hidden trump) may not lead it before it's revealed, unless
-  // it's the only suit left in their hand.
+  // The bidder is the only one who knows the still-hidden trump suit, and
+  // shouldn't be able to accidentally give it away (or waste it) before
+  // it's revealed — whether by leading it or by discarding it — as long
+  // as they have a legal non-trump alternative. Once following suit is
+  // mandatory (they hold the led suit and it happens to be the trump
+  // suit), this never applies: that play is forced, not a choice.
+  const isBidderTrumpBeforeReveal =
+    isBidder && thurupSuit && !thurupRevealed && card.suit === thurupSuit;
+
+  // First card of the trick — anything goes, except the bidder-trump rule.
   if (currentTrick.length === 0) {
-    if (isBidder && thurupSuit && !thurupRevealed && card.suit === thurupSuit) {
+    if (isBidderTrumpBeforeReveal) {
       const hasOtherSuit = hand.some((c) => c.suit !== thurupSuit);
       if (hasOtherSuit) {
         return {
@@ -190,15 +197,31 @@ export function validatePlay({ hand, card, currentTrick, leadSuit, thurupSuit, t
 
   // Must follow led suit if able
   const hasLeadSuit = hand.some((c) => c.suit === leadSuit);
-  if (hasLeadSuit && card.suit !== leadSuit) {
-    return {
-      valid: false,
-      reason: `You must follow suit (${SUIT_SYMBOLS[leadSuit]} ${leadSuit}).`,
-    };
+  if (hasLeadSuit) {
+    if (card.suit !== leadSuit) {
+      return {
+        valid: false,
+        reason: `You must follow suit (${SUIT_SYMBOLS[leadSuit]} ${leadSuit}).`,
+      };
+    }
+    return { valid: true }; // Forced follow — the bidder-trump rule never overrides this.
   }
 
-  // Can't follow suit — check trump obligations
-  if (!hasLeadSuit && thurupRevealed) {
+  // Can't follow suit — free discard, except: as the bidder, don't
+  // accidentally discard your own known trump before reveal if you have
+  // any non-trump card to discard instead.
+  if (isBidderTrumpBeforeReveal) {
+    const hasNonTrumpAlternative = hand.some((c) => c.suit !== thurupSuit);
+    if (hasNonTrumpAlternative) {
+      return {
+        valid: false,
+        reason: `As the bidder, discard a non-Thurup card if you can — you can't play Thurup (${SUIT_SYMBOLS[thurupSuit]}) before it's revealed.`,
+      };
+    }
+  }
+
+  // After reveal, must play trump if you have it
+  if (thurupRevealed) {
     const hasTrump = hand.some((c) => c.suit === thurupSuit);
     if (hasTrump && card.suit !== thurupSuit) {
       return {

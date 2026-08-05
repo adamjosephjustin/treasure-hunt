@@ -57,6 +57,9 @@ export class HostEngine {
     this.lastSeq = {};             // { uid: lastProcessedSeq }
     this.unsubActions = [];
     this.destroyed = false;
+
+    // Serializes action processing — see _processAction.
+    this._actionQueue = Promise.resolve();
   }
 
   // ─── Lifecycle ──────────────────────────────────────────
@@ -196,29 +199,46 @@ export class HostEngine {
 
   // ─── Action processing ─────────────────────────────────
 
-  async _processAction(uid, seat, action) {
-    try {
-      switch (action.type) {
-        case 'bid':
-          await this._handleBid(uid, seat, action.data);
-          break;
-        case 'pass':
-          await this._handlePass(uid, seat);
-          break;
-        case 'setThurup':
-          await this._handleSetThurup(uid, seat, action.data);
-          break;
-        case 'playCard':
-          await this._handlePlayCard(uid, seat, action.data);
-          break;
-        case 'requestReveal':
-          await this._handleRequestReveal(uid, seat);
-          break;
-        default:
-          console.warn('Unknown action type:', action.type);
-      }
-    } catch (err) {
-      console.error('Error processing action:', err);
+  /**
+   * Every handler below reads this.state, does an `await` (a Firestore
+   * write) partway through, and only *then* mutates this.state — e.g.
+   * _handlePlayCard checks phase/currentPlayer, awaits writing the
+   * updated hand, and only after that pushes the card into currentTrick
+   * and advances the turn. If a second action snapshot (a double-tap
+   * landing two different cards, or the same one fired twice) starts
+   * processing while the first is still paused at that await, it reads
+   * the *same, not-yet-mutated* phase/currentPlayer and passes the same
+   * checks — both plays land in the same trick. Routing every action
+   * through this single queue means only one _processActionSerial call
+   * is ever in flight at a time, so that race can't happen regardless of
+   * how close together two action snapshots fire.
+   */
+  _processAction(uid, seat, action) {
+    this._actionQueue = this._actionQueue
+      .then(() => this._processActionSerial(uid, seat, action))
+      .catch((err) => console.error('Error processing action:', err));
+    return this._actionQueue;
+  }
+
+  async _processActionSerial(uid, seat, action) {
+    switch (action.type) {
+      case 'bid':
+        await this._handleBid(uid, seat, action.data);
+        break;
+      case 'pass':
+        await this._handlePass(uid, seat);
+        break;
+      case 'setThurup':
+        await this._handleSetThurup(uid, seat, action.data);
+        break;
+      case 'playCard':
+        await this._handlePlayCard(uid, seat, action.data);
+        break;
+      case 'requestReveal':
+        await this._handleRequestReveal(uid, seat);
+        break;
+      default:
+        console.warn('Unknown action type:', action.type);
     }
   }
 

@@ -163,15 +163,28 @@ export default function ThurupGamePage() {
   }, [game?.bid?.amount, phase, mySeat]);
 
   // ─── Card play handler ────────────────────────────────
+  // playLockRef guards against a double-tap firing two plays before the
+  // round trip confirms the turn moved on — the host now also serializes
+  // action processing (see hostEngine.js) so this can't corrupt a trick
+  // even without this lock, but blocking the second tap client-side
+  // avoids a pointless rejected-action round trip too.
+
+  const playLockRef = useRef(false);
+
+  useEffect(() => {
+    if (!isMyTurn) playLockRef.current = false;
+  }, [isMyTurn]);
 
   const handlePlayCard = useCallback(
     (card) => {
       if (!isMyTurn || phase !== PHASE.PLAYING) return;
+      if (playLockRef.current) return;
       if (!validMoveIds.includes(card.id)) {
         showToast("You can't play that card", 'error');
         audioManager.playSFX('wrong');
         return;
       }
+      playLockRef.current = true;
       playCard(card.id);
       audioManager.playSFX('click');
     },
