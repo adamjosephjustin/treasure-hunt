@@ -54,7 +54,7 @@ export default function ThurupGamePage() {
   const roomId = game?.roomId || location.state?.roomId;
   const isHost = game ? game.host === uid : !!location.state?.isHost;
 
-  const { room } = useThurupRoom(roomId);
+  const { room, startNewSeries } = useThurupRoom(roomId);
   const { messages, sendMessage, unreadCount, markVisible } = useChat(roomId);
   const { isInVoice, isMuted, speakingPeers, voiceError, joinVoice, leaveVoice, toggleMute } =
     useVoiceChat(roomId, game?.players);
@@ -192,6 +192,15 @@ export default function ThurupGamePage() {
   // ─── Next round (host only) ───────────────────────────
 
   const handleNextRound = async () => {
+    if (hostEngineRef.current) {
+      await hostEngineRef.current.startNextRound();
+    }
+  };
+
+  // ─── New series (host only) — after one team collects all the petti ──
+
+  const handleNewSeries = async () => {
+    await startNewSeries();
     if (hostEngineRef.current) {
       await hostEngineRef.current.startNextRound();
     }
@@ -550,6 +559,7 @@ export default function ThurupGamePage() {
             <ThurupScoreboard
               game={game}
               onNextRound={isHost ? handleNextRound : undefined}
+              onNewSeries={isHost ? handleNewSeries : undefined}
               onBackToLobby={handleBackToLobby}
             />
           )}

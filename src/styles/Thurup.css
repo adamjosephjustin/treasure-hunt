@@ -512,6 +512,7 @@
 .running-score__label { color: rgba(245,240,230,0.5); font-weight: 500; }
 .running-score__value { color: var(--thurup-warm-white); font-weight: 700; }
 .running-score__game-pts { color: var(--thurup-gold); font-size: 0.7rem; }
+.running-score__petti { color: var(--thurup-gold-light); font-size: 0.75rem; font-weight: 600; }
 .running-score__divider { color: rgba(245,240,230,0.2); }
 .running-score__trick-info { color: rgba(245,240,230,0.5); }
 
@@ -895,11 +896,67 @@
   margin-top: 0.5rem;
 }
 
+/* ─── Petti transfer ────────────────────────────────────── */
+
+.thurup-petti-transfer {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px dashed var(--thurup-panel-border);
+}
+
+.thurup-petti-transfer__label {
+  font-size: 0.85rem;
+  color: rgba(245, 240, 230, 0.8);
+  margin-bottom: 0.4rem;
+}
+
+.thurup-petti-transfer__cards {
+  display: flex;
+  justify-content: center;
+  gap: 0.3rem;
+  font-size: 1.5rem;
+  min-height: 2rem;
+}
+
+.thurup-petti-transfer__totals {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  font-size: 0.8rem;
+  color: rgba(245, 240, 230, 0.6);
+  margin-top: 0.5rem;
+}
+.thurup-petti-transfer__totals strong { color: var(--thurup-gold-light); }
+
+/* ─── Series complete ───────────────────────────────────── */
+
+.thurup-series-complete {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(212, 168, 71, 0.2), rgba(212, 168, 71, 0.05));
+  border: 2px solid var(--thurup-gold);
+  color: var(--thurup-gold-light);
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.thurup-scoreboard__waiting-text {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: rgba(245, 240, 230, 0.6);
+}
+
 .thurup-scoreboard__actions {
   display: flex;
+  align-items: center;
   gap: 0.75rem;
   justify-content: center;
   margin-top: 1.25rem;
+  flex-wrap: wrap;
 }
 
 /* ─── Toast ─────────────────────────────────────────────── */

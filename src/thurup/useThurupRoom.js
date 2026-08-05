@@ -19,7 +19,7 @@ import {
   ensureAuth,
   getUid,
 } from '../utils/firebase';
-import { generateRoomCode } from './gameEngine';
+import { generateRoomCode, STARTING_PETTI } from './gameEngine';
 
 export function useThurupRoom(roomId) {
   const [room, setRoom] = useState(null);
@@ -79,6 +79,13 @@ export function useThurupRoom(roomId) {
       gameId: null,
       teamAGamePoints: 0,
       teamBGamePoints: 0,
+      // Petti (match) scoring: each team starts with its own stash;
+      // rounds transfer cards from the losing team to the winning team,
+      // and the series ends when one team's stash is fully depleted.
+      teamAPetti: STARTING_PETTI,
+      teamBPetti: STARTING_PETTI,
+      seriesComplete: false,
+      seriesWinner: null,
       createdAt: new Date().toISOString(),
     };
 
@@ -177,6 +184,19 @@ export function useThurupRoom(roomId) {
     return gameId;
   }, [room]);
 
+  /** Reset petti + game points for a fresh series, same room/players/teams. */
+  const startNewSeries = useCallback(async () => {
+    if (!room) return;
+    await updateDoc(doc(db, 'thurup_rooms', room.id), {
+      teamAGamePoints: 0,
+      teamBGamePoints: 0,
+      teamAPetti: STARTING_PETTI,
+      teamBPetti: STARTING_PETTI,
+      seriesComplete: false,
+      seriesWinner: null,
+    });
+  }, [room]);
+
   return {
     room,
     loading,
@@ -186,5 +206,6 @@ export function useThurupRoom(roomId) {
     toggleReady,
     leaveRoom,
     startGame,
+    startNewSeries,
   };
 }

@@ -26,6 +26,7 @@ import {
   checkBiddingResult,
   determineTrickWinner,
   checkRoundResult,
+  computePettiTransfer,
   createInitialGameState,
   sortHand,
   getNextSeat,
@@ -35,6 +36,7 @@ import {
   FIRST_DEAL_COUNT,
   NUM_PLAYERS,
   TOTAL_TRICKS,
+  STARTING_PETTI,
 } from './gameEngine';
 
 export class HostEngine {
@@ -542,7 +544,6 @@ export class HostEngine {
     );
 
     this.state.phase = PHASE.ROUND_END;
-    this.state.roundResult = result;
     this.state.lastAction = {
       seat: -1,
       type: 'roundEnd',
@@ -552,7 +553,11 @@ export class HostEngine {
         : `Bid failed! Team ${result.winningTeam} wins ${result.gamePoints} point(s)`,
     };
 
-    // Update room with game points
+    // Update room with game points + petti transfer. The petti numbers
+    // get stamped onto this round's roundResult (not just the room doc)
+    // so the scoreboard can show exactly what happened *this* round —
+    // "Team A gives 2 petti to Team B" — without diffing running totals.
+    let roundResult = result;
     try {
       const roomRef = doc(db, 'thurup_rooms', this.roomId);
       const roomSnap = await getDoc(roomRef);
@@ -560,15 +565,34 @@ export class HostEngine {
         const roomData = roomSnap.data();
         const teamAGamePts = (roomData.teamAGamePoints || 0) + (result.winningTeam === 'A' ? result.gamePoints : 0);
         const teamBGamePts = (roomData.teamBGamePoints || 0) + (result.winningTeam === 'B' ? result.gamePoints : 0);
+
+        const currentAPetti = roomData.teamAPetti ?? STARTING_PETTI;
+        const currentBPetti = roomData.teamBPetti ?? STARTING_PETTI;
+        const petti = computePettiTransfer(currentAPetti, currentBPetti, result.winningTeam, result.gamePoints);
+
+        roundResult = {
+          ...result,
+          pettiTransferred: petti.transferAmount,
+          teamAPetti: petti.teamAPetti,
+          teamBPetti: petti.teamBPetti,
+          seriesComplete: petti.seriesComplete,
+          seriesWinner: petti.seriesWinner,
+        };
+
         await updateDoc(roomRef, {
           teamAGamePoints: teamAGamePts,
           teamBGamePoints: teamBGamePts,
+          teamAPetti: petti.teamAPetti,
+          teamBPetti: petti.teamBPetti,
+          seriesComplete: petti.seriesComplete,
+          seriesWinner: petti.seriesWinner,
         });
       }
     } catch (e) {
       console.error('Failed to update room scores:', e);
     }
 
+    this.state.roundResult = roundResult;
     await this._syncState();
   }
 

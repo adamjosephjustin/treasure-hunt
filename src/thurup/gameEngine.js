@@ -309,6 +309,46 @@ export function checkRoundResult(teamAPoints, teamBPoints, bidAmount, bidderSeat
   }
 }
 
+// ─── Petti (match) scoring ────────────────────────────────────
+//
+// A regional match-scoring convention: each team starts with a stash of
+// physical cards ("petti"). After every round, the losing team hands the
+// winning team a number of petti cards equal to that round's gamePoints
+// (the same 1/2/3/4 scale from checkRoundResult above). Whoever collects
+// the *entire* pool (their own starting stash plus all of the other
+// team's) wins the series — so the series can swing back and forth over
+// many rounds before it's decided.
+
+export const STARTING_PETTI = 6;
+
+/**
+ * Apply one round's gamePoints as a petti transfer from the losing team
+ * to the winning team, capped so a team's stash can't go negative — that
+ * cap is what actually ends the series (the other team has collected the
+ * full pool at that point).
+ *
+ * @returns {{ teamAPetti: number, teamBPetti: number, transferAmount: number, seriesComplete: boolean, seriesWinner: 'A'|'B'|null }}
+ */
+export function computePettiTransfer(teamAPetti, teamBPetti, winningTeam, gamePoints) {
+  const losingCurrent = winningTeam === 'A' ? teamBPetti : teamAPetti;
+  const transferAmount = Math.min(gamePoints, losingCurrent);
+
+  let newA = teamAPetti;
+  let newB = teamBPetti;
+  if (winningTeam === 'A') {
+    newA += transferAmount;
+    newB -= transferAmount;
+  } else {
+    newB += transferAmount;
+    newA -= transferAmount;
+  }
+
+  const seriesComplete = newA <= 0 || newB <= 0;
+  const seriesWinner = seriesComplete ? (newA <= 0 ? 'B' : 'A') : null;
+
+  return { teamAPetti: newA, teamBPetti: newB, transferAmount, seriesComplete, seriesWinner };
+}
+
 // ─── Initial game state factory ─────────────────────────────
 
 /**
